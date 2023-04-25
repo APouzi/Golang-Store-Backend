@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:latest
+   
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/data
+    environment:
+      MYSQL_ROOT_PASSWORD: 'example'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'example'
+      MYSQL_DATABASE: 'database'
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: user
+      MYSQL_PASSWORD: example
+      MYSQL_DATABASE: database
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
