@@ -16,12 +16,16 @@ type TestUser struct{
 }
 
 func (route *Routes) Register(w http.ResponseWriter, r *http.Request){
-	// db := route.DB
+	db := route.DB
 
 	user := TestUser{}
 	helpers.ReadJSON(w, r, &user)
 	fmt.Println("Register",user)
-	id := route.UserQuery.RegisterUserIntoDB(user.PasswordHash,user.FirstName,user.LastName,user.Email)
+	id, err := route.UserQuery.RegisterUserIntoDB(db,user.PasswordHash,user.FirstName,user.LastName,user.Email)
+	if id == -1{
+		fmt.Println("User already exists")
+		return
+	}
 
 
 

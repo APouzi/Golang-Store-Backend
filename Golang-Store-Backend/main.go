@@ -165,15 +165,15 @@ func PopulateProductTables(db *sql.DB) {
 
 	_, err = db.Exec("INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)", "Test Category","This is a description category")
 	if err != nil{
-		log.Fatal("Error inserting tblCategoriesPrime")
+		log.Println("Error inserting tblCategoriesPrime")
 	}
 	_,err =  db.Exec("INSERT INTO tblProductsCategoriesPrime(ProductID, CategoryID) VALUES(1,1)")
 	if err != nil{
-		log.Fatal("Error inserting into tblProductsCategoriesPrime", err)
+		log.Println("Error inserting into tblProductsCategoriesPrime", err)
 	}
 	_,err =  db.Exec("INSERT INTO tblProductsCategoriesPrime(ProductID, CategoryID) VALUES(2,1)")
 	if err != nil{
-		log.Fatal("Error inserting into tblProductCategoies")
+		log.Println("Error inserting into tblProductCategoies")
 	}
 
 	resultProd := database.Product{}

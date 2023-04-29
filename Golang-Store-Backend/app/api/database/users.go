@@ -27,9 +27,13 @@ func InitUserStatments(db *sql.DB) *UserStatments {
 	return prep
 }
 
-func(stmt *UserStatments)  RegisterUserIntoDB(Password string, firstName string, lastName string, Email string) int{
-	
-	
+func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstName string, lastName string, Email string) (int64, error){
+	sqlStmt := "SELECT email FROM tblUser WHERE user = email"
+	row := db.QueryRow(sqlStmt, Email).Scan(&Email)
+	if row == sql.ErrNoRows{
+		fmt.Println("This user already exists")
+		return -1, nil
+	}
 	passByte, err := bcrypt.GenerateFromPassword([]byte(Password),bcrypt.DefaultCost)
 	if err != nil{
 		fmt.Println("Password Gen issue", err)
@@ -41,10 +45,12 @@ func(stmt *UserStatments)  RegisterUserIntoDB(Password string, firstName string,
 	}
 	id, err := response.LastInsertId()
 	if err != nil {
-		// handle error
+		return 0, err
 	}
 
-	return int(id)
+	// if 
+
+	return id, nil
 }
 // func(models *Models) getAll() *Customer{
 	
