@@ -3,6 +3,7 @@ package routes
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Apouzi/golang-shop/app/api/helpers"
 	"github.com/golang-jwt/jwt/v5"
@@ -64,6 +65,7 @@ func (route *Routes) Login(w http.ResponseWriter, r *http.Request){
 	}
 	fmt.Println("success")
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"exp":time.Now().Add(time.Minute * 1).Unix(),
 		"admin":"True",
 		"Hello!":"This is a hello",
 	})
@@ -79,17 +81,18 @@ type JWTtest struct{
 }
 
 func (route *Routes) VerifyTest(w http.ResponseWriter, r *http.Request){
-	jwttest := &JWTtest{}
-	helpers.ReadJSON(w, r, &jwttest)
-	token, err := jwt.Parse(jwttest.Token, func(token *jwt.Token) (interface{}, error) {
-		return []byte("Testing key"), nil
-	})
-	if err != nil{
-		fmt.Println("verify test error")
-		fmt.Println(err)
-	}
-	if token.Valid{
-		fmt.Println("token validated")
-	}
-	fmt.Println(token.Claims)
+	fmt.Println("THIS IS HIT")
+	// jwttest := &JWTtest{}
+	// helpers.ReadJSON(w, r, &jwttest)
+	// token, err := jwt.Parse(jwttest.Token, func(token *jwt.Token) (interface{}, error) {
+	// 	return []byte("Testing key"), nil
+	// })
+	// if err != nil{
+	// 	fmt.Println("verify test error")
+	// 	fmt.Println(err)
+	// }
+	// if token.Valid{
+	// 	fmt.Println("token validated")
+	// }
+	// fmt.Println(token.Claims)
 }

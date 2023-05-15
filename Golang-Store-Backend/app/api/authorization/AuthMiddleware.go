@@ -10,9 +10,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Apouzi/golang-shop/app/api/helpers"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // CustomClaims contains custom data we want from the token.
@@ -73,6 +75,43 @@ func EnsureValidToken() func(next http.Handler) http.Handler {
 		return middleware.CheckJWT(next)
 	}
 }
+type JWTtest struct{
+	Token string `json:"JWT"`
+}
+
+func ValidateToken(next http.Handler) http.Handler{
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+		jwttest := &JWTtest{}
+		helpers.ReadJSON(w, r, &jwttest)
+		token, err := jwt.Parse(jwttest.Token, func(token *jwt.Token) (interface{}, error) {
+			return []byte("Testing key"), nil
+		})
+		if err != nil{
+			fmt.Println("middleware test error")
+			fmt.Println(token.Claims)
+			fmt.Println(err)
+			return
+		}
+		// claims, ok := token.Claims.(jwt.MapClaims)["exp"]
+		exp, _ := token.Claims.GetExpirationTime()
+		// exp, ok := token.Claims.(jwt.MapClaims)
+		// if !ok {
+		// 	// Handle the error
+		// 	fmt.Println("Invalid expiration time")
+		// 	return
+		// }
+		// fmt.Println("middleware time:", exp)
+		if time.Now().After(exp.Time){
+			fmt.Println("exp middleware hit")	
+		}
+		if token.Valid{
+			fmt.Println("token validated in middleware")
+		}
+		fmt.Println(token.Claims)
+		next.ServeHTTP(w,r)
+	})
+}
+
 
 // HasScope checks whether our claims have a specific scope.
 func (c CustomClaims) HasScope(expectedScope string) bool {
@@ -86,3 +125,4 @@ func (c CustomClaims) HasScope(expectedScope string) bool {
 
     return false
 }
+
