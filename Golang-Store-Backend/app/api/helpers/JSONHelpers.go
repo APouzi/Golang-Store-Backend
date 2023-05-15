@@ -3,6 +3,7 @@ package helpers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -19,6 +20,7 @@ func ReadJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	if err != nil{
 		return err
 	}
+	fmt.Println("Read JSON", data)
 
 	// The purpose of this code is to decode a JSON-encoded input stream and discard the decoded value. It is commonly used when you only want to check if the input stream is a valid JSON data, without actually processing the decoded value. &struct{}{} creates a pointer to an empty struct literal. This is used as a placeholder to store the decoded JSON value, which is discarded afterwards.The purpose of this code is to decode a JSON-encoded input stream and discard the decoded value. It is commonly used when you only want to check if the input stream is a valid JSON data, without actually processing the decoded value.
 	err = dec.Decode(&struct{}{})

@@ -32,13 +32,13 @@ func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstN
 	row := db.QueryRow(sqlStmt, Email).Scan(&Email)
 	if row == sql.ErrNoRows{
 		fmt.Println("This user already exists")
-		return -1, nil
+		return -1, fmt.Errorf("This user already exists")
 	}
 	passByte, err := bcrypt.GenerateFromPassword([]byte(Password),bcrypt.DefaultCost)
 	if err != nil{
 		fmt.Println("Password Gen issue", err)
 	}
-
+	fmt.Println(firstName,lastName,Email)
 	response, err := stmt.RegisterUser.Exec(passByte,firstName, lastName, Email)
 	if err != nil{
 		fmt.Println("Registering User Into DB Error:", err)
@@ -51,6 +51,22 @@ func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstN
 	// if 
 
 	return id, nil
+}
+
+func (stmt *UserStatments) LoginUserDB(db *sql.DB, email string)(string, string, error){
+	sqlStmt := "SELECT email, PasswordHash FROM tblUser where email = ?"
+	var emailTwo string
+	var password string
+	row := db.QueryRow(sqlStmt, email).Scan(&emailTwo,&password)
+
+	if row == sql.ErrNoRows{
+		fmt.Println("email doesn't exist")
+		err := fmt.Errorf("email doesn't exist")
+		return "", "", err
+	}
+
+	return emailTwo, password, nil
+
 }
 // func(models *Models) getAll() *Customer{
 	

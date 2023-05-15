@@ -25,17 +25,19 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 	
 	digest.Group(func(digest chi.Router){
 		digest.Use(authorization.EnsureValidToken())
-		digest.Post("/login", r.Login)
 	})
 
 
 	
 	//Index and Product
 	digest.Get("/", r.Index)
-	digest.Get("/products/",r.GetAllProductsEndPoint)
+	
 	digest.Get("/products/{ProductID}",r.GetOneProductsEndPoint)
-	digest.Get("/products/{CategoryName}",r.GetProductCategoryEndPointFinal)
+	digest.Get("/products/",r.GetAllProductsEndPoint)
+	// digest.Get("/products/{CategoryName}",r.GetProductCategoryEndPointFinal)
 	digest.Post("/users/",r.Register)
+	digest.Post("/users/login",r.Login)
+	digest.Post("/users/verify",r.VerifyTest)
 	// digest.Get("/categories/",r.GetAllCategories)
 
 	return digest

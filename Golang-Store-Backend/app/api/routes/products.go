@@ -24,7 +24,7 @@ func (route *Routes) GetAllProductsEndPoint(w http.ResponseWriter, r *http.Reque
 }
 
 func (route *Routes) GetOneProductsEndPoint(w http.ResponseWriter, r *http.Request){
-	
+	fmt.Println("get one hit!")
 	query :=  chi.URLParam(r,"ProductID")
 	queryToInt, err := strconv.Atoi(query)
 	if err != nil{
@@ -70,7 +70,7 @@ func (route *Routes) GetProductCategoryEndPointFinal(w http.ResponseWriter, r *h
 	// if err != nil{
 	// 	fmt.Println("Get Product Category ")
 	// }
-
+// TODO needs error handling for none existent categories!
 	ProdJSON := route.ProductQuery.GetProductCategoryFinal(route.DB,category)
 	JSONWrite, err := json.Marshal(ProdJSON)
 

@@ -46,6 +46,7 @@ func main(){
 
 // Initializing the environment variables to run. 
 func init() {
+	
     // Get the absolute path to the directory where the executable is located
     exeDir, err := filepath.Abs("./")
     if err != nil {

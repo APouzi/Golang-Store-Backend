@@ -123,7 +123,7 @@ func(prep *PrepareStatmentsProducts) GetCategoryProduct(db *sql.DB, category int
 			&prodJSON.ProductPrice, 
 			&prodJSON.SKU, 
 			&prodJSON.UPC, 
-			&prodJSON.PRIMARY_IMAGE,
+			// &prodJSON.PRIMARY_IMAGE,
 		)
 		if err != nil{
 			fmt.Println("scanning error:",err)
