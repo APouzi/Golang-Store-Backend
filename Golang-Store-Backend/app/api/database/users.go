@@ -23,6 +23,11 @@ func InitUserStatments(db *sql.DB) *UserStatments {
 	if err != nil{
 		fmt.Println("Prepare statment broken", err)
 	}
+	prep.GetUserAndProfile, err = db.Prepare("SELECT PhoneNumberCell, PhoneNumberHome FROM tblUserProfile WHERE UserID = ?")
+	if err != nil{
+		fmt.Println("Prepare statement err", err)
+	}
+	prep.GetUser, err = db.Prepare("SELECT UserID, PasswordHash, FirstName, LastName, Email FROM tblUser where Email = ?")
 
 	return prep
 }
@@ -68,6 +73,7 @@ func (stmt *UserStatments) LoginUserDB(db *sql.DB, email string)(string, string,
 	return emailTwo, password, nil
 
 }
-// func(models *Models) getAll() *Customer{
-	
-// } 
+
+func (stmt *UserStatments) GetUserProfile(db *sql.DB, userProfileID int64)(string, string, error){
+	return "","",nil
+}

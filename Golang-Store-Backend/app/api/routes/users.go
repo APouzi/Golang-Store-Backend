@@ -63,13 +63,13 @@ func (route *Routes) Login(w http.ResponseWriter, r *http.Request){
 		fmt.Println("password does not match")
 		return
 	}
-	fmt.Println("success")
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp":time.Now().Add(time.Minute * 1).Unix(),
-		"admin":"True",
-		"Hello!":"This is a hello",
+		"admin":"False",
+		"email":login.Email,
+		"userId":3,
 	})
-
+	// Remove the testing key for this
 	tokenString, err := token.SignedString([]byte("Testing key"))
 	sendBack := SendBackLogin{Email: tokenString}
 
@@ -82,6 +82,8 @@ type JWTtest struct{
 
 func (route *Routes) VerifyTest(w http.ResponseWriter, r *http.Request){
 	fmt.Println("THIS IS HIT")
+	
+	// fmt.Println("verify email",ctx)
 	// jwttest := &JWTtest{}
 	// helpers.ReadJSON(w, r, &jwttest)
 	// token, err := jwt.Parse(jwttest.Token, func(token *jwt.Token) (interface{}, error) {
@@ -95,4 +97,11 @@ func (route *Routes) VerifyTest(w http.ResponseWriter, r *http.Request){
 	// 	fmt.Println("token validated")
 	// }
 	// fmt.Println(token.Claims)
+}
+
+func (route *Routes) UserProfile(w http.ResponseWriter, r *http.Request){
+	email := r.Context().Value("email")
+	fmt.Println(email)
+	route.UserQuery.GetUserProfile(route.DB, 3)
+
 }
