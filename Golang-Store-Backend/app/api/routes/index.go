@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -13,11 +12,10 @@ import (
 func(route *Routes) Index(w http.ResponseWriter, r *http.Request) {
 	
 	db := route.DB
-	result, err := db.Query("SELECT from tblTEST where id = 1",1)
+	_, err := db.Query("SELECT from tblTEST where id = 1",1)
 	if err != nil{
 		log.Println(err)
 	}
-	fmt.Println("TEST:", result)
 	payload := helpers.ErrorJSONResponse{Error:false, Message: "All good"}
 
 

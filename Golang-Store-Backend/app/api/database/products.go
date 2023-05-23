@@ -156,7 +156,6 @@ func(prep *PrepareStatmentsProducts) GetProductCategoryFinal(db *sql.DB, categor
 		}
 		products = append(products, prodJSON)
 	}
-	fmt.Println("STMT:", products)
 	
 	return products
 }

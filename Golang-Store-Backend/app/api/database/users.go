@@ -45,7 +45,6 @@ func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstN
 	if err != nil{
 		fmt.Println("Password Gen issue", err)
 	}
-	fmt.Println(firstName,lastName,Email)
 	tx, err := db.Begin()
 	defer func(){
 		if err != nil{
@@ -57,7 +56,6 @@ func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstN
 	queryUser := "INSERT INTO tblUser(PasswordHash,FirstName, LastName, Email) VALUES(?,?,?,?)"
 	response, err := tx.Exec(queryUser, passByte,firstName, lastName, Email)
 
-	// response, err := stmt.RegisterUser.Exec(passByte,firstName, lastName, Email)
 	id, err := response.LastInsertId()
 	if err != nil {
 		return 0, err
@@ -71,8 +69,6 @@ func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstN
 	}
 	
 	tx.Commit()
-	// if 
-
 	return id, nil
 }
 
@@ -97,7 +93,6 @@ func (stmt *UserStatments) GetUserProfile(db *sql.DB, userProfileID any)(int, in
 	var phoneNumCell int
 	var phoneNumHome int
 	row := stmt.GetUserProfileStmt.QueryRow(userProfileID).Scan(&UserProfileID,&phoneNumCell, &phoneNumHome)
-	fmt.Println("GetUserProfile", userProfileID)
 	if row == sql.ErrNoRows{
 		fmt.Println("profile doesn't exist")
 		err := fmt.Errorf("profile doesn't exist")

@@ -3,7 +3,6 @@ package routes
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 	"time"
 
 	"github.com/Apouzi/golang-shop/app/api/helpers"
@@ -108,7 +107,6 @@ type UserProfile struct{
 
 func (route *Routes) UserProfile(w http.ResponseWriter, r *http.Request){
 	userID := r.Context().Value("userId")
-	fmt.Println(userID, "userID type",reflect.TypeOf(userID))
 	UserProfile := &UserProfile{}
 	cell, home, err := route.UserQuery.GetUserProfile(route.DB, userID)
 

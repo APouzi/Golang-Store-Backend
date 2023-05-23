@@ -24,7 +24,6 @@ func (route *Routes) GetAllProductsEndPoint(w http.ResponseWriter, r *http.Reque
 }
 
 func (route *Routes) GetOneProductsEndPoint(w http.ResponseWriter, r *http.Request){
-	fmt.Println("get one hit!")
 	query :=  chi.URLParam(r,"ProductID")
 	queryToInt, err := strconv.Atoi(query)
 	if err != nil{
