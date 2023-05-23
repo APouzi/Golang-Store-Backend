@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
-	"github.com/Apouzi/golang-shop/app/api/helpers"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -16,9 +16,9 @@ type JWTtest struct{
 
 func ValidateToken(next http.Handler) http.Handler{
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		jwttest := &JWTtest{}
-		helpers.ReadJSON(w, r, &jwttest)
-		token, err := jwt.Parse(jwttest.Token, func(token *jwt.Token) (interface{}, error) {
+		jwttest := r.Header.Get("Authorization")
+		jwttest = strings.Split(jwttest, "Bearer ")[1]
+		token, err := jwt.Parse(jwttest, func(token *jwt.Token) (interface{}, error) {
 			return []byte("Testing key"), nil
 		})
 		if err != nil{
@@ -27,8 +27,8 @@ func ValidateToken(next http.Handler) http.Handler{
 			return
 		}
 		claims := token.Claims.(jwt.MapClaims)
-		fmt.Println("email claim",claims["email"])
-		ctx := context.WithValue(r.Context(), "email",claims["email"])
+		fmt.Println("userId claim",claims["userId"])
+		ctx := context.WithValue(r.Context(), "userId", claims["userId"])
 		if token.Valid{
 			fmt.Println("token validated in middleware")
 		}
