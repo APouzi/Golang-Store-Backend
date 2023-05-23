@@ -16,9 +16,10 @@ type JWTtest struct{
 
 func ValidateToken(next http.Handler) http.Handler{
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		jwttest := r.Header.Get("Authorization")
-		jwttest = strings.Split(jwttest, "Bearer ")[1]
-		token, err := jwt.Parse(jwttest, func(token *jwt.Token) (interface{}, error) {
+		jwttoken := r.Header.Get("Authorization")
+		// When the jwttoken comes in, it will input "bearer" into the token and we have to remove this from the token so we can parse it. 
+		jwttoken = strings.Split(jwttoken, "Bearer ")[1]
+		token, err := jwt.Parse(jwttoken, func(token *jwt.Token) (interface{}, error) {
 			return []byte("Testing key"), nil
 		})
 		if err != nil{
