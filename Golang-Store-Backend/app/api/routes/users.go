@@ -72,6 +72,10 @@ func (route *Routes) Login(w http.ResponseWriter, r *http.Request){
 	// Remove the testing key for this
 	tokenString, err := token.SignedString([]byte("Testing key"))
 	sendBack := SendBackLogin{Token: tokenString}
+	if err != nil{
+		fmt.Println("signed token error")
+		fmt.Println(err)
+	}
 
 	helpers.WriteJSON(w, http.StatusAccepted, &sendBack)
 }
