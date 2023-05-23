@@ -45,14 +45,13 @@ type LoginUser struct{
 }
 
 type SendBackLogin struct{
-	Email string `email:"Email"`
+	Token string `jwt:"Email"`
 }
 func (route *Routes) Login(w http.ResponseWriter, r *http.Request){
 	db := route.DB
 	login := LoginUser{}
 	helpers.ReadJSON(w, r, &login)
 	_, passwordStored, userID,err := route.UserQuery.LoginUserDB(db, login.Email)
-	fmt.Println("sent in password",login.Password)
 	if err != nil{
 		fmt.Println(err)
 	}
@@ -72,7 +71,7 @@ func (route *Routes) Login(w http.ResponseWriter, r *http.Request){
 	})
 	// Remove the testing key for this
 	tokenString, err := token.SignedString([]byte("Testing key"))
-	sendBack := SendBackLogin{Email: tokenString}
+	sendBack := SendBackLogin{Token: tokenString}
 
 	helpers.WriteJSON(w, http.StatusAccepted, &sendBack)
 }
