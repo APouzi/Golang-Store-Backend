@@ -12,7 +12,7 @@ var data sql.DB
 type UserStatments struct{
 	RegisterUser *sql.Stmt
 	GetUser *sql.Stmt
-	GetUserAndProfile *sql.Stmt
+	GetUserProfileStmt *sql.Stmt
 	GetGetUserProfileWishListWishListProduct *sql.Stmt
 }
 
@@ -23,12 +23,14 @@ func InitUserStatments(db *sql.DB) *UserStatments {
 	if err != nil{
 		fmt.Println("Prepare statment broken", err)
 	}
-	prep.GetUserAndProfile, err = db.Prepare("SELECT PhoneNumberCell, PhoneNumberHome FROM tblUserProfile WHERE UserID = ?")
+	prep.GetUserProfileStmt, err = db.Prepare("SELECT UserProfileID, PhoneNumberCell, PhoneNumberHome FROM tblUserProfile WHERE UserID = ?")
 	if err != nil{
 		fmt.Println("Prepare statement err", err)
 	}
-	prep.GetUser, err = db.Prepare("SELECT UserID, PasswordHash, FirstName, LastName, Email FROM tblUser where Email = ?")
-
+	prep.GetUser, err = db.Prepare("SELECT UserID,Email, PasswordHash FROM tblUser where Email = ?")
+	if err != nil{
+		fmt.Println("Prepare statement err", err)
+	}
 	return prep
 }
 
@@ -44,36 +46,62 @@ func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstN
 		fmt.Println("Password Gen issue", err)
 	}
 	fmt.Println(firstName,lastName,Email)
-	response, err := stmt.RegisterUser.Exec(passByte,firstName, lastName, Email)
-	if err != nil{
-		fmt.Println("Registering User Into DB Error:", err)
-	}
+	tx, err := db.Begin()
+	defer func(){
+		if err != nil{
+			fmt.Println("Transaction for profile failed")
+			tx.Rollback()
+			return
+		}
+	}()
+	queryUser := "INSERT INTO tblUser(PasswordHash,FirstName, LastName, Email) VALUES(?,?,?,?)"
+	response, err := tx.Exec(queryUser, passByte,firstName, lastName, Email)
+
+	// response, err := stmt.RegisterUser.Exec(passByte,firstName, lastName, Email)
 	id, err := response.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
+	queryProfile := "INSERT INTO tblUserProfile(UserID, PhoneNumberCell, PhoneNumberHome) VALUES(?,?,?)"
 
+	_,err = tx.Exec(queryProfile,id, "33333","44444")
+
+	if err != nil{
+		fmt.Println("Registering User Into DB Error:", err)
+	}
+	
+	tx.Commit()
 	// if 
 
 	return id, nil
 }
 
-func (stmt *UserStatments) LoginUserDB(db *sql.DB, email string)(string, string, error){
-	sqlStmt := "SELECT email, PasswordHash FROM tblUser where email = ?"
+func (stmt *UserStatments) LoginUserDB(db *sql.DB, email string)(string, string, int64,error){
+	var userID int64
 	var emailTwo string
 	var password string
-	row := db.QueryRow(sqlStmt, email).Scan(&emailTwo,&password)
+	row := stmt.GetUser.QueryRow(email).Scan(&userID,&emailTwo,&password)
 
 	if row == sql.ErrNoRows{
 		fmt.Println("email doesn't exist")
 		err := fmt.Errorf("email doesn't exist")
-		return "", "", err
+		return "", "", -1,err
 	}
 
-	return emailTwo, password, nil
+	return emailTwo, password,userID, nil
 
 }
 
-func (stmt *UserStatments) GetUserProfile(db *sql.DB, userProfileID int64)(string, string, error){
-	return "","",nil
+func (stmt *UserStatments) GetUserProfile(db *sql.DB, userProfileID any)(int, int, error){
+	var UserProfileID int
+	var phoneNumCell int
+	var phoneNumHome int
+	row := stmt.GetUserProfileStmt.QueryRow(userProfileID).Scan(&UserProfileID,&phoneNumCell, &phoneNumHome)
+	fmt.Println("GetUserProfile", userProfileID)
+	if row == sql.ErrNoRows{
+		fmt.Println("profile doesn't exist")
+		err := fmt.Errorf("profile doesn't exist")
+		return -1, -1, err
+	}
+	return phoneNumCell,phoneNumHome,nil
 }

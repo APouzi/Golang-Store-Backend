@@ -3,6 +3,7 @@ package routes
 import (
 	"fmt"
 	"net/http"
+	"reflect"
 	"time"
 
 	"github.com/Apouzi/golang-shop/app/api/helpers"
@@ -51,11 +52,12 @@ func (route *Routes) Login(w http.ResponseWriter, r *http.Request){
 	db := route.DB
 	login := LoginUser{}
 	helpers.ReadJSON(w, r, &login)
-	_, passwordStored, err := route.UserQuery.LoginUserDB(db, login.Email)
+	_, passwordStored, userID,err := route.UserQuery.LoginUserDB(db, login.Email)
 	fmt.Println("sent in password",login.Password)
 	if err != nil{
 		fmt.Println(err)
 	}
+
 
 	err = bcrypt.CompareHashAndPassword([]byte(passwordStored), []byte(login.Password))
 
@@ -64,10 +66,10 @@ func (route *Routes) Login(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"exp":time.Now().Add(time.Minute * 1).Unix(),
+		"exp":time.Now().Add(time.Minute * 10).Unix(),
 		"admin":"False",
 		"email":login.Email,
-		"userId":3,
+		"userId":userID,
 	})
 	// Remove the testing key for this
 	tokenString, err := token.SignedString([]byte("Testing key"))
@@ -99,9 +101,26 @@ func (route *Routes) VerifyTest(w http.ResponseWriter, r *http.Request){
 	// fmt.Println(token.Claims)
 }
 
+type UserProfile struct{
+	Cell int `json:"Cell"`
+	Home int `json:"Home"`
+}
+
 func (route *Routes) UserProfile(w http.ResponseWriter, r *http.Request){
-	email := r.Context().Value("email")
-	fmt.Println(email)
-	route.UserQuery.GetUserProfile(route.DB, 3)
+	userID := r.Context().Value("userId")
+	fmt.Println(userID, "userID type",reflect.TypeOf(userID))
+	UserProfile := &UserProfile{}
+	cell, home, err := route.UserQuery.GetUserProfile(route.DB, userID)
+
+
+	if err != nil{
+		fmt.Println("Error with getting userprofile in users.go")
+	}
+	
+	UserProfile.Cell = cell
+	UserProfile.Home = home
+
+	helpers.WriteJSON(w,http.StatusAccepted, &UserProfile)
+
 
 }
