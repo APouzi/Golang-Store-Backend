@@ -29,9 +29,6 @@ func ValidateToken(next http.Handler) http.Handler{
 		}
 		claims := token.Claims.(jwt.MapClaims)
 		ctx := context.WithValue(r.Context(), "userId", claims["userId"])
-		if token.Valid{
-			fmt.Println("token validated in middleware")
-		}
 		next.ServeHTTP(w,r.WithContext(ctx))
 	})
 }
