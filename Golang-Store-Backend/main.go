@@ -163,8 +163,7 @@ func PopulateProductTables(db *sql.DB) {
 			log.Fatal("Error with tblProducts")
 		}
 	}
-
-	_, err = db.Exec("INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)", "Test Category","This is a description category")
+		_, err = db.Exec("INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)", "Test Category","This is a description category")
 	if err != nil{
 		log.Println("Error inserting tblCategoriesPrime")
 	}
@@ -206,6 +205,28 @@ func PopulateProductTables(db *sql.DB) {
 	}
 	//Test this out!
 
+}
+
+func TestCategories( db *sql.DB){
+	tx, err := db.Begin()
+
+	if err != nil{
+		fmt.Println("TextCategories transaction intialization failed")
+	}
+
+	prime_category :=  "INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)"
+	sub_cat := "INSERT INTO tblCategoriesSub(CategoryName, CategoryDescription) VALUES(?,?)"
+	final_cat := "INSERT INTO tblCategoriesFinal(CategoryName, CategoryDescription) VALUES(?,?)"
+
+
+	idPrime, err := tx.Exec(prime_category, "PrimeTest","this is a test category")
+	idSub, err := tx.Exec(sub_cat, "SubTest","this is a test category")
+	idFinal, err := tx.Exec(final_cat, "FinalTest","this is a test category")
+	
+	PrimeSub := "INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)"
+	SubFinal := "INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)"
+	FinalProd := "INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)"
+	tx.Exec(PrimeSub, )
 }
 type user struct{
 	UserID int
