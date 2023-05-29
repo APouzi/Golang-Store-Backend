@@ -113,23 +113,36 @@ func (route *Routes) CreateTestCategory(w http.ResponseWriter, r *http.Request){
 	if err != nil{
 		fmt.Println("Issue with FinalTest transaction")
 	}
+
+	PrimeSub:= "INSERT INTO tblCatPrimeSub(CatPrimeID, CatSubID) VALUES(?,?)"
+	FinalProd := "INSERT INTO tblCatFinalProd(CatFinalID, ProductID) VALUES(?,?)"
+	SubFinal := "INSERT INTO tblCatSubFinal(CatSubID, CatFinalID) VALUES(?,?)"
 	
-	PrimeSub := "INSERT INTO tblCatFinalProd(CatFinalID, ProductID) VALUES(?,?)"
-	SubFinal := "INSERT INTO tblCatPrimeSub(CatPrimeID, CatSubID) VALUES(?,?)"
-	FinalProd := "INSERT INTO tblCatSubFinal(CatSubID, CatFinalID) VALUES(?,?)"
 	idPrimeR,err := idPrime.LastInsertId()
 	idSubR, err := idSub.LastInsertId()
 	idFinalR, err := idFinal.LastInsertId()
-	tx.Exec(PrimeSub, idFinalR, 1)
-	tx.Exec(SubFinal, idPrimeR,idSubR)
-	tx.Exec(FinalProd, idSubR, idFinalR)
+	tx.Exec(FinalProd, idFinalR, 1)
+	tx.Exec(PrimeSub, idPrimeR,idSubR)
+	tx.Exec(SubFinal, idSubR, idFinalR)
 	tx.Commit()
 }
 
 func (route *Routes) PullTestCategory(w http.ResponseWriter, r *http.Request){
-	query := "SELECT * FROM tblProducts 
-	JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID 
-	JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CategoryID 
-	JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCategoriesFinal.CatFinalID 
-	JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal."
+	// 	JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCategoriesFinal.CatFinalID 
+	query := "SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatPrimeID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID WHERE tblProducts.ProductID = ?"
+	// query2 := "SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatPrimeID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID"
+	type RowReadTest struct{
+		ProductID int
+		ProductName string
+	}
+	row := route.DB.QueryRow(query)
+	readinto := RowReadTest{}
+
+	err:= row.Scan(&readinto.ProductID, &readinto.ProductName)
+	if err != nil{
+		fmt.Println("err with row in PullTestCategory, error below")
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("PullTestCAtegory result is:", readinto.ProductID,readinto.ProductName)
 }

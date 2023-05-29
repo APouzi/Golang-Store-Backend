@@ -29,7 +29,6 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 		digest.Get("/users/profile",r.UserProfile)
 	})
 
-	digest.Post("/products/test-categories", r.CreateTestCategory)
 
 
 	
@@ -43,6 +42,9 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 	digest.Post("/users/login",r.Login)
 	
 	// digest.Get("/categories/",r.GetAllCategories)
-
+	
+	// These are testing for categories
+	digest.Post("/products/test-categories", r.CreateTestCategory)
+	digest.Get("/products/test-categories/pullTest", r.PullTestCategory)
 	return digest
 }
