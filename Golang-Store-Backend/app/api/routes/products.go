@@ -125,3 +125,11 @@ func (route *Routes) CreateTestCategory(w http.ResponseWriter, r *http.Request){
 	tx.Exec(FinalProd, idSubR, idFinalR)
 	tx.Commit()
 }
+
+func (route *Routes) PullTestCategory(w http.ResponseWriter, r *http.Request){
+	query := "SELECT * FROM tblProducts 
+	JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID 
+	JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CategoryID 
+	JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCategoriesFinal.CatFinalID 
+	JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal."
+}
