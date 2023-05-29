@@ -29,6 +29,8 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 		digest.Get("/users/profile",r.UserProfile)
 	})
 
+	digest.Post("/products/test-categories", r.CreateTestCategory)
+
 
 	
 	//Index and Product
