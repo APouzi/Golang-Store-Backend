@@ -36,47 +36,22 @@ CREATE TABLE IF NOT EXISTS tblCatPrimeSub (
   CatSubID INT NOT NULL,
   FOREIGN KEY (CatPrimeID) REFERENCES tblCategoriesPrime (CategoryID) ON DELETE CASCADE,
   FOREIGN KEY (CatSubID) REFERENCES tblCategoriesSub (CategoryID) ON DELETE CASCADE
-)
+);
 
 CREATE TABLE IF NOT EXISTS tblCatSubFinal (
   CatSubID INT NOT NULL,
   CatFinalID INT NOT NULL,
   FOREIGN KEY (CatSubID) REFERENCES tblCategoriesSub (CategoryID) ON DELETE CASCADE,
   FOREIGN KEY (CatFinalID) REFERENCES tblCategoriesFinal (CategoryID) ON DELETE CASCADE
-)
+);
 
 CREATE TABLE IF NOT EXISTS tblCatFinalProd (
   CatFinalID INT NOT NULL,
   ProductID INT NOT NULL,
-  FOREIGN KEY (CategoryID) REFERENCES tblCategoriesFinal (CategoryID) ON DELETE CASCADE,
-  FOREIGN KEY (CategoryID) REFERENCES tblProducts (CategoryID) ON DELETE CASCADE
+  FOREIGN KEY (CatFinalID) REFERENCES tblCategoriesFinal (CategoryID) ON DELETE CASCADE,
+  FOREIGN KEY (ProductID) REFERENCES tblProducts (ProductID) ON DELETE CASCADE
   
-)
-
--- Lines 35 to 58 are all Denormalization tables, these will not be used because of the fact that I am instead using materialized views and this will greatly improve performance.
--- CREATE TABLE IF NOT EXISTS tblProductsCategoriesPrime (
---   ProductID INT NOT NULL,
---   CategoryID INT NOT NULL,
---   PRIMARY KEY (ProductID, CategoryID),
---   FOREIGN KEY (ProductID) REFERENCES tblProducts (ProductID) ON DELETE CASCADE,
---   FOREIGN KEY (CategoryID) REFERENCES tblCategoriesPrime (CategoryID) ON DELETE CASCADE
--- );
-
--- CREATE TABLE IF NOT EXISTS tblProductsCategoriesSub (
---   ProductID INT NOT NULL,
---   CategoryID INT NOT NULL,
---   PRIMARY KEY (ProductID, CategoryID),
---   FOREIGN KEY (ProductID) REFERENCES tblProducts (ProductID) ON DELETE CASCADE,
---   FOREIGN KEY (CategoryID) REFERENCES tblCategoriesSub (CategoryID) ON DELETE CASCADE
--- );
-
--- CREATE TABLE IF NOT EXISTS tblProductsCategoriesFinal (
---   ProductID INT NOT NULL,
---   CategoryID INT NOT NULL,
---   PRIMARY KEY (ProductID, CategoryID),
---   FOREIGN KEY (ProductID) REFERENCES tblProducts (ProductID) ON DELETE CASCADE,
---   FOREIGN KEY (CategoryID) REFERENCES tblCategoriesFinal (CategoryID) ON DELETE CASCADE
--- );
+);
 
 
 CREATE TABLE IF NOT EXISTS tblProductInventory (
