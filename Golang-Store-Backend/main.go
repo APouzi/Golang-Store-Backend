@@ -145,7 +145,7 @@ func TestInitCreateThenDelete(db *sql.DB) bool{
 
 func PopulateProductTables(db *sql.DB) {
 	
-	query, err := ioutil.ReadFile("./sql/CreateTables&Rows.sql")
+	query, err := ioutil.ReadFile("./sql/CreateTablesAndRows.sql")
 
 	if err != nil{
 		log.Fatal("Error when loading sql file",err)
@@ -163,18 +163,18 @@ func PopulateProductTables(db *sql.DB) {
 			log.Fatal("Error with tblProducts")
 		}
 	}
-		_, err = db.Exec("INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)", "Test Category","This is a description category")
-	if err != nil{
-		log.Println("Error inserting tblCategoriesPrime")
-	}
-	_,err =  db.Exec("INSERT INTO tblProductsCategoriesPrime(ProductID, CategoryID) VALUES(1,1)")
-	if err != nil{
-		log.Println("Error inserting into tblProductsCategoriesPrime", err)
-	}
-	_,err =  db.Exec("INSERT INTO tblProductsCategoriesPrime(ProductID, CategoryID) VALUES(2,1)")
-	if err != nil{
-		log.Println("Error inserting into tblProductCategoies")
-	}
+	// _, err = db.Exec("INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)", "Test Category","This is a description category")
+	// if err != nil{
+	// 	log.Println("Error inserting tblCategoriesPrime")
+	// }
+	// _,err =  db.Exec("INSERT INTO tblProductsCategoriesPrime(ProductID, CategoryID) VALUES(1,1)")
+	// if err != nil{
+	// 	log.Println("Error inserting into tblProductsCategoriesPrime", err)
+	// }
+	// _,err =  db.Exec("INSERT INTO tblProductsCategoriesPrime(ProductID, CategoryID) VALUES(2,1)")
+	// if err != nil{
+	// 	log.Println("Error inserting into tblProductCategoies")
+	// }
 
 	resultProd := database.Product{}
 	row := db.QueryRow("select ProductID, ProductName, ProductDescription, ProductPrice from tblProducts where ProductID = ?",4)
@@ -187,16 +187,16 @@ func PopulateProductTables(db *sql.DB) {
 	}
 
 	listPrint:= []database.Product{}
-	rows, err := db.Query("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesPrime ON tblProducts.ProductID = tblProductsCategoriesPrime.ProductID JOIN tblCategoriesPrime ON tblProductsCategoriesPrime.CategoryID = tblCategoriesPrime.CategoryID WHERE tblCategoriesPrime.CategoryName = ?", "Test Category" )
+	// rows, err := db.Query("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesPrime ON tblProducts.ProductID = tblProductsCategoriesPrime.ProductID JOIN tblCategoriesPrime ON tblProductsCategoriesPrime.CategoryID = tblCategoriesPrime.CategoryID WHERE tblCategoriesPrime.CategoryName = ?", "Test Category" )
 	if err != nil{
 		log.Fatal("Error with category", err)
 	}
-	defer rows.Close()
-	for rows.Next(){
-		resultProd2 := database.Product{}
-		rows.Scan(&resultProd2.ProductID, &resultProd2.ProductName, &resultProd2.ProductDescription, &resultProd2.ProductPrice)
-		listPrint = append(listPrint, resultProd2)
-	}
+	// defer rows.Close()
+	// for rows.Next(){
+	// 	resultProd2 := database.Product{}
+	// 	rows.Scan(&resultProd2.ProductID, &resultProd2.ProductName, &resultProd2.ProductDescription, &resultProd2.ProductPrice)
+	// 	listPrint = append(listPrint, resultProd2)
+	// }
 	fmt.Println(resultProd)
 	fmt.Println("Population of tables has been completed!")
 	fmt.Println("Categories:",listPrint)
@@ -208,25 +208,7 @@ func PopulateProductTables(db *sql.DB) {
 }
 
 func TestCategories( db *sql.DB){
-	tx, err := db.Begin()
-
-	if err != nil{
-		fmt.Println("TextCategories transaction intialization failed")
-	}
-
-	prime_category :=  "INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)"
-	sub_cat := "INSERT INTO tblCategoriesSub(CategoryName, CategoryDescription) VALUES(?,?)"
-	final_cat := "INSERT INTO tblCategoriesFinal(CategoryName, CategoryDescription) VALUES(?,?)"
-
-
-	idPrime, err := tx.Exec(prime_category, "PrimeTest","this is a test category")
-	idSub, err := tx.Exec(sub_cat, "SubTest","this is a test category")
-	idFinal, err := tx.Exec(final_cat, "FinalTest","this is a test category")
 	
-	PrimeSub := "INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)"
-	SubFinal := "INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)"
-	FinalProd := "INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)"
-	tx.Exec(PrimeSub, )
 }
 type user struct{
 	UserID int

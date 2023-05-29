@@ -33,17 +33,17 @@ func InitPrepare(db *sql.DB) *PrepareStatmentsProducts{
 	// 	log.Fatal(err)
 	// }
 
-	prep.GetAllProductByCategoryPrimeStmt, err = db.Prepare("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesPrime ON tblProducts.ProductID = tblProductsCategoriesPrime.ProductID JOIN tblCategoriesPrime ON tblProductsCategoriesPrime.CategoryID = tblCategoriesPrime.CategoryID WHERE tblCategoriesPrime.CategoryName = ?") 
-	if err != nil{
-		log.Fatal(err)
-	}
+	// prep.GetAllProductByCategoryPrimeStmt, err = db.Prepare("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesPrime ON tblProducts.ProductID = tblProductsCategoriesPrime.ProductID JOIN tblCategoriesPrime ON tblProductsCategoriesPrime.CategoryID = tblCategoriesPrime.CategoryID WHERE tblCategoriesPrime.CategoryName = ?") 
+	// if err != nil{
+	// 	log.Fatal(err)
+	// }
 
-	prep.GetAllProductByCategorySubStmt, err = db.Prepare("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesSub ON tblProducts.ProductID = tblProductsCategoriesSub.ProductID JOIN tblCategoriesSub ON tblProductsCategoriesSub.CategoryID = tblCategoriesSub.CategoryID WHERE tblCategoriesSub.CategoryName = ?") 
-	if err != nil{
-		log.Fatal(err)
-	}
+	// prep.GetAllProductByCategorySubStmt, err = db.Prepare("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesSub ON tblProducts.ProductID = tblProductsCategoriesSub.ProductID JOIN tblCategoriesSub ON tblProductsCategoriesSub.CategoryID = tblCategoriesSub.CategoryID WHERE tblCategoriesSub.CategoryName = ?") 
+	// if err != nil{
+	// 	log.Fatal(err)
+	// }
 
-	prep.GetAllProductByCategoryFinalStmt, err = db.Prepare("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesFinal ON tblProducts.ProductID = tblProductsCategoriesFinal.ProductID JOIN tblCategoriesFinal ON tblProductsCategoriesFinal.CategoryID = tblCategoriesFinal.CategoryID WHERE tblCategoriesFinal.CategoryName = ?") 
+	// prep.GetAllProductByCategoryFinalStmt, err = db.Prepare("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesFinal ON tblProducts.ProductID = tblProductsCategoriesFinal.ProductID JOIN tblCategoriesFinal ON tblProductsCategoriesFinal.CategoryID = tblCategoriesFinal.CategoryID WHERE tblCategoriesFinal.CategoryName = ?") 
 	if err != nil{
 		log.Fatal(err)
 	}
