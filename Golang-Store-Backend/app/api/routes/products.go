@@ -183,7 +183,23 @@ func (route *Routes) CreatePrimeCategory(w http.ResponseWriter, r *http.Request)
 	helpers.WriteJSON(w, http.StatusAccepted, resultID)
 }
 
-
+func (route *Routes) CreateSubCategory(w http.ResponseWriter, r *http.Request){
+	category_read := CategoryInsert{}
+	err := helpers.ReadJSON(w, r, &category_read)
+	if err != nil{
+		fmt.Println(err)
+	}
+	result, err := route.DB.Exec("INSERT INTO tblCategoriesSub(CategoryName, CategoryDescription) VALUES(?,?)", category_read.CategoryName, category_read.CategoryDescription )
+	if err != nil{
+		fmt.Println(err)
+	}
+	resultID, err := result.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
+	
+	helpers.WriteJSON(w, http.StatusAccepted, resultID)
+}
 type ReadCat struct{
 	Category int `json:"category"`
 }
