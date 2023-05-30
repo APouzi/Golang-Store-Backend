@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Apouzi/golang-shop/app/api/helpers"
 	"github.com/go-chi/chi"
 	"github.com/go-jose/go-jose/v3/json"
 )
@@ -129,20 +130,70 @@ func (route *Routes) CreateTestCategory(w http.ResponseWriter, r *http.Request){
 
 func (route *Routes) PullTestCategory(w http.ResponseWriter, r *http.Request){
 	// 	JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCategoriesFinal.CatFinalID 
-	query := "SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatPrimeID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID WHERE tblProducts.ProductID = ?"
+	// query := "SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatPrimeID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID WHERE tblProducts.ProductID = ?"
 	// query2 := "SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatPrimeID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID"
+	query3 := "SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatPrimeID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID WHERE tblProducts.ProductName = ?"
 	type RowReadTest struct{
 		ProductID int
 		ProductName string
 	}
-	row := route.DB.QueryRow(query)
+	// row := route.DB.QueryRow(query2)
 	readinto := RowReadTest{}
+	row, err := route.DB.Query(query3, "testProductPopulate5")
 
-	err:= row.Scan(&readinto.ProductID, &readinto.ProductName)
+	// err:= row.Scan(&readinto.ProductID, &readinto.ProductName)
 	if err != nil{
 		fmt.Println("err with row in PullTestCategory, error below")
 		fmt.Println(err)
 		return
 	}
+	for row.Next(){
+		err := row.Scan(&readinto.ProductID, &readinto.ProductName)
+		if err != nil{
+			fmt.Println(err)
+		}
+		fmt.Println(readinto.ProductID, readinto.ProductName)
+	}
 	fmt.Println("PullTestCAtegory result is:", readinto.ProductID,readinto.ProductName)
+}
+
+
+
+// Admin functionality
+
+type CategoryInsert struct{
+	CategoryName string `json:"CategoryName"`
+	CategoryDescription string `json:"CategoryDescrption"`
+}
+func (route *Routes) CreatePrimeCategory(w http.ResponseWriter, r *http.Request){
+	category_read := CategoryInsert{}
+	err := helpers.ReadJSON(w, r, &category_read)
+	if err != nil{
+		fmt.Println(err)
+	}
+	result, err := route.DB.Exec("INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)", category_read.CategoryName, category_read.CategoryDescription )
+	if err != nil{
+		fmt.Println(err)
+	}
+	resultID, err := result.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
+	
+	helpers.WriteJSON(w, http.StatusAccepted, resultID)
+}
+
+
+type ReadCat struct{
+	Category int `json:"category"`
+}
+func (route *Routes) InsertIntoFinalProd(w http.ResponseWriter, r *http.Request){
+	ReadCatR := ReadCat{}
+	err := helpers.ReadJSON(w,r,&ReadCatR)
+	if err != nil{
+		fmt.Println(err)
+	}
+	fmt.Println("InsertIntoCategory ReadCatR",ReadCatR)
+	FinalProd := "INSERT INTO tblCatFinalProd(CatFinalID, ProductID) VALUES(?,?)"
+	route.DB.Exec(FinalProd, 1,ReadCatR.Category)
 }
