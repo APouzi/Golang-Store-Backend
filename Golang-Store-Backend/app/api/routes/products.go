@@ -239,6 +239,22 @@ func (route *Routes) ConnectSubToFinalCategory(w http.ResponseWriter, r *http.Re
 	helpers.WriteJSON(w, http.StatusAccepted, resultID)
 }
 
+func (route *Routes) ConnectPrimeToSubCategory(w http.ResponseWriter, r *http.Request){
+	// Frontend will have the names and ids, so I PROBABLY wont need to do a search regarding the names of category to get ids
+	FinalSub := CatToCat{}
+	err := helpers.ReadJSON(w,r, &FinalSub)
+	if err != nil{
+		fmt.Println(err)
+	}
+	result, err := route.DB.Exec("INSERT INTO tblCatPrimeSub(CatSubID, CatFinalID) VALUES(?,?)", FinalSub.CatStart, FinalSub.CatEnd)
+
+	resultID, err := result.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
+	helpers.WriteJSON(w, http.StatusAccepted, resultID)
+}
+
 
 type ReadCat struct{
 	Category int `json:"category"`
