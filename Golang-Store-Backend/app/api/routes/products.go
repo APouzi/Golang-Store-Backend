@@ -163,7 +163,7 @@ func (route *Routes) PullTestCategory(w http.ResponseWriter, r *http.Request){
 
 type CategoryInsert struct{
 	CategoryName string `json:"CategoryName"`
-	CategoryDescription string `json:"CategoryDescrption"`
+	CategoryDescription string `json:"CategoryDescription"`
 }
 func (route *Routes) CreatePrimeCategory(w http.ResponseWriter, r *http.Request){
 	category_read := CategoryInsert{}
@@ -220,8 +220,8 @@ func (route *Routes) CreateFinalCategory(w http.ResponseWriter, r *http.Request)
 }
 
 type CatToCat struct {
-	CatStart string `json:"CategoryStart`
-	CatEnd string `json:"CategoryEnd`
+	CatStart int `json:"CategoryStart"`
+	CatEnd int `json:"CategoryEnd"`
 }
 
 
@@ -232,12 +232,15 @@ func (route *Routes) ConnectPrimeToSubCategory(w http.ResponseWriter, r *http.Re
 	if err != nil{
 		fmt.Println(err)
 	}
-	result, err := route.DB.Exec("INSERT INTO tblCatPrimeSub(CatSubID, CatFinalID) VALUES(?,?)", FinalSub.CatStart, FinalSub.CatEnd)
-
+	result, err := route.DB.Exec("INSERT INTO tblCatPrimeSub(CatPrimeID,  CatSubID) VALUES(?,?)", FinalSub.CatStart, FinalSub.CatEnd)
+	if err != nil{
+		fmt.Println(err)
+	}
 	resultID, err := result.LastInsertId()
 	if err != nil{
 		fmt.Println(err)
 	}
+	
 	helpers.WriteJSON(w, http.StatusAccepted, resultID)
 }
 
@@ -258,17 +261,21 @@ func (route *Routes) ConnectSubToFinalCategory(w http.ResponseWriter, r *http.Re
 }
 
 type CatToProd struct {
-	Cat string `json:"Category"`
-	Prod string `json:"Product"`
+	Cat int `json:"Category"`
+	Prod int `json:"Product"`
 }
 func (route *Routes) ConnectFinalToProdCategory(w http.ResponseWriter, r *http.Request){
 	// Frontend will have the names and ids, so I PROBABLY wont need to do a search regarding the names of category to get ids
-	FinalSub := CatToProd{}
-	err := helpers.ReadJSON(w,r, &FinalSub)
+	FinalProd := CatToProd{}
+	err := helpers.ReadJSON(w,r, &FinalProd)
 	if err != nil{
 		fmt.Println(err)
 	}
-	result, err := route.DB.Exec("INSERT INTO tblCatFinalProd(CatSubID, CatFinalID) VALUES(?,?)", FinalSub.Cat, FinalSub.Prod)
+	result, err := route.DB.Exec("INSERT INTO tblCatFinalProd(CatFinalID, ProductID) VALUES(?,?)", FinalProd.Cat, FinalProd.Prod)
+
+	if err != nil{
+		fmt.Println(err)
+	}
 
 	resultID, err := result.LastInsertId()
 	if err != nil{
@@ -294,7 +301,7 @@ func (route *Routes) InsertIntoFinalProd(w http.ResponseWriter, r *http.Request)
 
 type CategoryReturn struct{
 	CategoryName string `json:"CategoryName"`
-	CategoryDescription string `json:"CategoryDescrption"`
+	CategoryDescription string `json:"CategoryDescription"`
 }
 
 type CategoriesList struct{
@@ -311,7 +318,7 @@ func (route *Routes) ReturnAllPrimeCategories(w http.ResponseWriter, r *http.Req
 	categoryList := CategoriesList{}
 	categoryList.collection = []CategoryReturn{}
 	for rows.Next(){
-		rows.Scan(&category.CategoryName, category.CategoryDescription)
+		rows.Scan(&category.CategoryName, &category.CategoryDescription)
 		categoryList.collection = append(categoryList.collection, category)
 	}
 	helpers.WriteJSON(w,http.StatusAccepted, categoryList.collection)
@@ -319,7 +326,33 @@ func (route *Routes) ReturnAllPrimeCategories(w http.ResponseWriter, r *http.Req
 }
 
 func (route *Routes) ReturnAllSubCategories(w http.ResponseWriter, r *http.Request){
+	query := "SELECT CategoryName, CategoryDescription FROM tblCategoriesSub"
+	rows,err := route.DB.Query(query)
+	if err != nil{
+		fmt.Println(err)
+	}
+	category := CategoryReturn{}
+	categoryList := CategoriesList{}
+	categoryList.collection = []CategoryReturn{}
+	for rows.Next(){
+		rows.Scan(&category.CategoryName, &category.CategoryDescription)
+		categoryList.collection = append(categoryList.collection, category)
+	}
+	helpers.WriteJSON(w,http.StatusAccepted, categoryList.collection)
 }
 
 func (route *Routes) ReturnAllFinalCategories(w http.ResponseWriter, r *http.Request){
+	query := "SELECT CategoryName, CategoryDescription FROM tblCategoriesFinal"
+	rows,err := route.DB.Query(query)
+	if err != nil{
+		fmt.Println(err)
+	}
+	category := CategoryReturn{}
+	categoryList := CategoriesList{}
+	categoryList.collection = []CategoryReturn{}
+	for rows.Next(){
+		rows.Scan(&category.CategoryName, &category.CategoryDescription)
+		categoryList.collection = append(categoryList.collection, category)
+	}
+	helpers.WriteJSON(w,http.StatusAccepted, categoryList.collection)
 }
