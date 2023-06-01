@@ -120,8 +120,17 @@ func (route *Routes) CreateTestCategory(w http.ResponseWriter, r *http.Request){
 	SubFinal := "INSERT INTO tblCatSubFinal(CatSubID, CatFinalID) VALUES(?,?)"
 	
 	idPrimeR,err := idPrime.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
 	idSubR, err := idSub.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
 	idFinalR, err := idFinal.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
 	tx.Exec(FinalProd, idFinalR, 1)
 	tx.Exec(PrimeSub, idPrimeR,idSubR)
 	tx.Exec(SubFinal, idSubR, idFinalR)
@@ -252,6 +261,9 @@ func (route *Routes) ConnectSubToFinalCategory(w http.ResponseWriter, r *http.Re
 		fmt.Println(err)
 	}
 	result, err := route.DB.Exec("INSERT INTO tblCatSubFinal(CatSubID, CatFinalID) VALUES(?,?)", FinalSub.CatStart, FinalSub.CatEnd)
+	if err != nil{
+		fmt.Println(err)
+	}
 
 	resultID, err := result.LastInsertId()
 	if err != nil{
