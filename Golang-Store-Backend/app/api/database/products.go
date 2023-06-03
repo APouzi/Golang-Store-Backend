@@ -13,6 +13,7 @@ type PrepareStatmentsProducts struct{
 	GetAllProductByCategoryPrimeStmt *sql.Stmt
 	GetAllProductByCategorySubStmt *sql.Stmt
 	GetAllProductByCategoryFinalStmt *sql.Stmt
+	GetProductPrimeCategorybyID *sql.Stmt
 }
 
 func InitPrepare(db *sql.DB) *PrepareStatmentsProducts{
@@ -27,6 +28,8 @@ func InitPrepare(db *sql.DB) *PrepareStatmentsProducts{
 	if err != nil{
 		log.Fatal(err)
 	}
+
+	// prep.GetProductPrimeCategoryByID, err = db.Prepare("SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatSubID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID where tblCategoriesPrime.CategoryID")
 
 	// prep.GetAllProductByCategoryStmt, err = db.Prepare("SELECT * FROM tblProducts JOIN tblCategory ON tblProducts.CategoryID = tblCategories.id WHERE tblCategori.id = ?")
 	// if err != nil{

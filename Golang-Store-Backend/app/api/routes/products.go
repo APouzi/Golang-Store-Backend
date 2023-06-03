@@ -2,6 +2,7 @@ package routes
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -24,9 +25,6 @@ func (route *Routes) GetAllProductsEndPoint(w http.ResponseWriter, r *http.Reque
 	
 }
 
-func(route *Routes) CreateProduct(w http.ResponseWriter, r *http.Request){
-
-}
 
 func (route *Routes) GetOneProductsEndPoint(w http.ResponseWriter, r *http.Request){
 	query :=  chi.URLParam(r,"ProductID")
@@ -387,10 +385,16 @@ type ProductCreate struct{
 }
 
 // Needs to get SKU, UPC, Primary Image to get created. PRimary Image needs to be a google/AWS bucket
-func (route *Routes) CreateProduct(w http.ResponseWriter, r *http.Request){
+func(route *Routes) CreateProduct(w http.ResponseWriter, r *http.Request){
+	transaction, err := route.DB.Begin()
+	if err != nil{
+		log.Println("Error creating a transation in CreateProduct")
+		log.Println(err)
+	}
 
-	
+	transaction.Exec("INSERT INTO tblProducts(Product_Name, Product_Description, Product_Price)")
 }
+
 
 type VariationCreate struct{
 	Name string `json:"Variation_Name"`

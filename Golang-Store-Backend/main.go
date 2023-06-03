@@ -23,6 +23,10 @@ type Config struct{
 
 
 func main(){
+	// argsRetrieve := os.Args[0]
+	// if argsRetrieve == "initProd"{
+	// 	fmt.Println("It did it!")
+	// }
 	connection, models := initDB()
 	app := Config{
 		DB: connection,
@@ -93,8 +97,8 @@ func initDB() (*sql.DB,*database.Models){
 		log.Fatal("Connection Test had failed")
 	}
 
-	PopulateProductTables(db)
-	PopulateTestUsers(db)
+	// PopulateProductTables(db)
+	// PopulateTestUsers(db)
 	
 
 	database := &database.Models{}
