@@ -1,14 +1,42 @@
 CREATE TABLE IF NOT EXISTS tblProducts (
-  ProductID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  ProductName VARCHAR(255) NOT NULL,
-  ProductDescription TEXT,
-  ProductPrice DECIMAL(10,2) NOT NULL,
+  Product_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  Product_Name VARCHAR(255) NOT NULL,
+  Product_Description TEXT,
+  Product_Price DECIMAL(10,2),
   SKU VARCHAR(50),
   UPC VARCHAR(50),
   PRIMARY_IMAGE VARCHAR(255) NULL,
-  ProductDateAdded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  ModifiedDate DATETIME NULL
+  Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  Modified_Date DATETIME NULL
   
+);
+
+CREATE TABLE IF NOT EXISTS tblProductVariation (
+  Variation_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  Product_ID INT NOT NULL,
+  Variation_Name VARCHAR(255) NOT NULL,
+  Variation_Description TEXT,
+  Variation_Price DECIMAL(10,2) NOT NULL,
+  SKU VARCHAR(50),
+  UPC VARCHAR(50),
+  PRIMARY_IMAGE VARCHAR(255) NULL,
+  Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  Modified_Date DATETIME NULL,
+  FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS tblProductInventory (
+  Inv_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+  Variation_ID INT NOT NULL,
+  Quantity INT NOT NULL,
+  FOREIGN KEY (Variation_ID) REFERENCES tblProductVariation (Variation_ID) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS tblLocation (
+  Location_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+  Inv_ID INT NOT NULL,
+  Location_At VARCHAR(255) NOT NULL,
+  FOREIGN KEY (Inv_ID) REFERENCES tblProductInventory (Inv_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tblCategoriesPrime (
@@ -54,13 +82,6 @@ CREATE TABLE IF NOT EXISTS tblCatFinalProd (
 );
 
 
-CREATE TABLE IF NOT EXISTS tblProductInventory (
-  ProductID INT NOT NULL,
-  Quantity INT NOT NULL,
-  PRIMARY KEY (ProductID),
-  FOREIGN KEY (ProductID) REFERENCES tblProducts (ProductID) ON DELETE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS tblDiscount (
   DiscountID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   DiscountCode VARCHAR(255) NOT NULL,
@@ -100,3 +121,4 @@ CREATE TABLE IF NOT EXISTS tblAttribute (
   FOREIGN KEY (VariationID) REFERENCES tblVariation (VariationID) ON DELETE CASCADE
 );
 
+CREATE VIEW PrimeSubFinalCategoryProducts AS SELECT tblProducts.ProductID, tblProducts.ProductName, tblCategoriesPrime.CategoryName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatSubID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID ;

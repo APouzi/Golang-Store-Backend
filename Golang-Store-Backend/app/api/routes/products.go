@@ -24,6 +24,10 @@ func (route *Routes) GetAllProductsEndPoint(w http.ResponseWriter, r *http.Reque
 	
 }
 
+func(route *Routes) CreateProduct(w http.ResponseWriter, r *http.Request){
+
+}
+
 func (route *Routes) GetOneProductsEndPoint(w http.ResponseWriter, r *http.Request){
 	query :=  chi.URLParam(r,"ProductID")
 	queryToInt, err := strconv.Atoi(query)
@@ -141,7 +145,8 @@ func (route *Routes) PullTestCategory(w http.ResponseWriter, r *http.Request){
 	// 	JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCategoriesFinal.CatFinalID 
 	// query := "SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatSubID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID WHERE tblProducts.ProductID = ?"
 	// query := "SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatSubID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID"
-	query := "SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatSubID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID WHERE tblCategoriesPrime.CategoryName = ?"
+	// query := "SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatSubID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID WHERE tblCategoriesPrime.CategoryName = ?"
+	query := "SELECT ProductID, ProductName FROM PrimeSubFinalCategoryProducts where CategoryName = ?"
 	type RowReadTest struct{
 		ProductID int
 		ProductName string
@@ -367,4 +372,36 @@ func (route *Routes) ReturnAllFinalCategories(w http.ResponseWriter, r *http.Req
 		categoryList.collection = append(categoryList.collection, category)
 	}
 	helpers.WriteJSON(w,http.StatusAccepted, categoryList.collection)
+}
+
+// Product automatically creates Variation
+type ProductCreate struct{
+	Name string `json:"Product_Name"`
+	Description string `json:"Product_Description"`
+	Price string `json:"Product_Price"`
+	VariationName string `json:"Variation_Name"`
+	VariationDescription string `json:"Variation_Description"`
+	VariationPrice float32 `json:"Variation_Price"`
+	VariationQuantity int  `json:"Variation_Quantity"`
+	LocationAt string `json:"Location_At"`
+}
+
+// Needs to get SKU, UPC, Primary Image to get created. PRimary Image needs to be a google/AWS bucket
+func (route *Routes) CreateProduct(w http.ResponseWriter, r *http.Request){
+
+	
+}
+
+type VariationCreate struct{
+	Name string `json:"Variation_Name"`
+	Description string `json:"Variation_Description"`
+	Price string `json:"Variation_Price"`
+	PrimaryImage string `json:"Primary_Image"`
+	VariationQuantity int  `json:"Variation_Quantity"`
+	LocationAt string `json:"Location_At"`
+}
+
+func (route *Routes) CreateVariation(w http.ResponseWriter, r *http.Request){
+
+	
 }

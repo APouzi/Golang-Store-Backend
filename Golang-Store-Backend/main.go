@@ -145,7 +145,7 @@ func TestInitCreateThenDelete(db *sql.DB) bool{
 
 func PopulateProductTables(db *sql.DB) {
 	
-	query, err := ioutil.ReadFile("./sql/CreateTablesAndRows.sql")
+	query, err := ioutil.ReadFile("./sql/Products.sql")
 
 	if err != nil{
 		log.Fatal("Error when loading sql file",err)
