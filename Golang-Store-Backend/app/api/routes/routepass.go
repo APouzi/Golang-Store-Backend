@@ -29,9 +29,6 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 		digest.Get("/users/profile",r.UserProfile)
 	})
 
-
-
-	
 	//Index and Product
 	digest.Get("/", r.Index)
 	
@@ -49,8 +46,9 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 	digest.Post("/products/test-categories/InsertTest", r.InsertIntoFinalProd)
 
 	// Admin need to lockdown based on jwt payload and scope
+	digest.Post("/product/", r.CreateProduct)
 	digest.Post("/category/prime", r.CreatePrimeCategory)
-	digest.Post("/category/sub",r.CreateSubCategory)
+	digest.Post("/category/sub", r.CreateSubCategory)
 	digest.Post("/category/final", r.CreateFinalCategory)
 	digest.Post("/category/primetosub",r.ConnectPrimeToSubCategory)
 	digest.Post("/category/subtofinal",r.ConnectSubToFinalCategory)

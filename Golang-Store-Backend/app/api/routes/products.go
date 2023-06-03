@@ -392,7 +392,47 @@ func(route *Routes) CreateProduct(w http.ResponseWriter, r *http.Request){
 		log.Println(err)
 	}
 
-	transaction.Exec("INSERT INTO tblProducts(Product_Name, Product_Description, Product_Price)")
+	productRetrieve := &ProductCreate{}
+
+	helpers.ReadJSON(w, r, &productRetrieve)
+
+	tRes, err := transaction.Exec("INSERT INTO tblProducts(Product_Name, Product_Description, Product_Price) VALUES(?,?,?)", productRetrieve.Name,productRetrieve.Description,productRetrieve.Price)
+	if err != nil{
+		fmt.Println("transaction at tblProduct has failed")
+		fmt.Println(err)
+	}
+	prodID, err := tRes.LastInsertId()
+	if err != nil {
+		fmt.Println("retrieval of LastInsertID of tblProduct has failed")
+		fmt.Println(err)
+	}
+	tRes, err = transaction.Exec("INSERT INTO tblProductVariation(Product_ID,Variation_Name, Variation_Description, Variation_Price) VALUES(?,?,?,?)",prodID, productRetrieve.VariationName, productRetrieve.VariationDescription, productRetrieve.VariationPrice)
+	if err != nil{
+		fmt.Println("transaction at tblProductVariation has failed")
+		fmt.Println(err)
+	}
+	ProdVarID, err :=  tRes.LastInsertId()
+	if err != nil {
+		fmt.Println("retrieval of LastInsertID of tblProductVariation has failed")
+		fmt.Println(err)
+	}
+	tRes, err = transaction.Exec("INSERT INTO tblProductInventory(Variation_ID, Quantity) VALUES(?,?)",  ProdVarID,productRetrieve.VariationQuantity)
+	if err != nil {
+		fmt.Println("transaction at tblProductInventory has failed")
+		fmt.Println(err)
+	}
+	ProdInvID, err := tRes.LastInsertId()
+	if err != nil {
+		fmt.Println("retrieval of LastInsertID of tblProductInventory has failed")
+		fmt.Println(err)
+	}
+
+	_, err = transaction.Exec("INSERT INTO tblLocation(Inv_ID,Location_AT) VALUES(?,?)", ProdInvID,productRetrieve.LocationAt)
+	if err != nil {
+		fmt.Println("transaction at tblProductInventory has failed")
+		fmt.Println(err)
+	}	
+
 }
 
 
