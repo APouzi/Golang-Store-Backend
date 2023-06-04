@@ -441,7 +441,7 @@ type VariationCreate struct{
 	Name string `json:"Variation_Name"`
 	Description string `json:"Variation_Description"`
 	Price float32 `json:"Variation_Price"`
-	PrimaryImage string `json:"Primary_Image"`
+	PrimaryImage string `json:"Primary_Image,omitempty"`
 	VariationQuantity int  `json:"Variation_Quantity"`
 	LocationAt string `json:"Location_At"`
 }
@@ -455,6 +455,11 @@ func (route *Routes) CreateVariation(w http.ResponseWriter, r *http.Request){
 	if row.Err() != nil{
 		fmt.Println(row.Err().Error())
 		return
+	}
+	// DELETE
+	if variation.PrimaryImage == "" {
+
+		fmt.Println("image no")
 	}
 	var exists bool
 	if row.Scan(&exists); exists == false {
