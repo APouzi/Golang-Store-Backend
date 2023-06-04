@@ -447,5 +447,14 @@ type VariationCreate struct{
 
 func (route *Routes) CreateVariation(w http.ResponseWriter, r *http.Request){
 
+	variation := VariationCreate{}
+	helpers.ReadJSON(w,r, &variation)
+// Check if product exists, if not, then return false
+	_, err := route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price) VALUES(?,?,?,?)", variation.Name, variation.Description, variation.Price)
+	if err != nil{
+		fmt.Println("insert into tblProductVariation failed")
+		fmt.Println(err)
+	}
+//Check if location exists, if not, then we should just create one. It only exists if  
 	
 }
