@@ -41,25 +41,25 @@ type Admin struct {
 // --------- Product ---------
 
 type Product struct {
-	ProductID          int
-	ProductName        string
-	ProductDescription string
-	ProductPrice       float32
-	SKU                string
-	UPC                string
-	PRIMARY_IMAGE      string
-	ProductDateAdded   string
-	ModifiedDate       string
+	Product_ID          int
+	Product_Name        string
+	Product_Description string
+	Product_Price       float32
+	SKU                 string
+	UPC                 string
+	PRIMARY_IMAGE       string
+	ProductDateAdded    string
+	ModifiedDate        string
 }
 
 type ProductJSON struct {
-	ProductID          int     `json:"ProductID"`
-	ProductName        string  `json:"ProductName"`
-	ProductDescription string  `json:"ProductDescription"`
-	ProductPrice       float32 `json:"ProductPrice"`
-	SKU                string  `json:"SKU"`
-	UPC                string  `json:"UPC"`
-	PRIMARY_IMAGE      string  `json:"PRIMARY_IMAGE,omitempty"`
+	Product_ID          int     `json:"Product_ID"`
+	Product_Name        string  `json:"Product_Name"`
+	Product_Description string  `json:"Product_Description"`
+	Product_Price       float32 `json:"Product_Price"`
+	SKU                 string  `json:"SKU"`
+	UPC                 string  `json:"UPC"`
+	PRIMARY_IMAGE       string  `json:"PRIMARY_IMAGE,omitempty"`
 	// ProductDateAdded   string  `json:"DateAdded"`
 	// ModifiedDate       string `json:"ModifiedDate"`
 }

@@ -19,34 +19,34 @@ type PrepareStatmentsProducts struct{
 func InitPrepare(db *sql.DB) *PrepareStatmentsProducts{
 	prep := &PrepareStatmentsProducts{}
 	var err error
-	prep.GetAllProdStmt, err = db.Prepare("SELECT ProductID, ProductName, ProductDescription, ProductPrice, SKU, UPC, PRIMARY_IMAGE FROM tblProducts")
+	prep.GetAllProdStmt, err = db.Prepare("SELECT Product_ID, Product_Name, Product_Description, Product_Price, SKU, UPC, PRIMARY_IMAGE FROM tblProducts")
 	if err != nil{
 		log.Fatal(err)
 	}
 
-	prep.GetOneProductStmt, err = db.Prepare("SELECT ProductID, ProductName, ProductDescription, ProductPrice, SKU, UPC, PRIMARY_IMAGE FROM tblProducts where ProductID = ?")
+	prep.GetOneProductStmt, err = db.Prepare("SELECT Product_ID, Product_Name, Product_Description, Product_Price, SKU, UPC, PRIMARY_IMAGE FROM tblProducts where Product_ID = ?")
 	if err != nil{
 		log.Fatal(err)
 	}
 
-	// prep.GetProductPrimeCategoryByID, err = db.Prepare("SELECT tblProducts.ProductID, tblProducts.ProductName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatSubID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID where tblCategoriesPrime.CategoryID")
+	// prep.GetProductPrimeCategoryByID, err = db.Prepare("SELECT tblProducts.Product_ID, tblProducts.Product_Name FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.Product_ID = tblProducts.Product_ID JOIN tblCategoriesFinal ON tblCategoriesFinal.Category_ID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.Category_ID JOIN tblCategoriesSub ON tblCategoriesSub.Category_ID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatSubID = tblCategoriesSub.Category_ID JOIN tblCategoriesPrime ON tblCategoriesPrime.Category_ID = tblCatPrimeSub.CatPrimeID where tblCategoriesPrime.Category_ID")
 
-	// prep.GetAllProductByCategoryStmt, err = db.Prepare("SELECT * FROM tblProducts JOIN tblCategory ON tblProducts.CategoryID = tblCategories.id WHERE tblCategori.id = ?")
+	// prep.GetAllProductByCategoryStmt, err = db.Prepare("SELECT * FROM tblProducts JOIN tblCategory ON tblProducts.Category_ID = tblCategories.id WHERE tblCategori.id = ?")
 	// if err != nil{
 	// 	log.Fatal(err)
 	// }
 
-	// prep.GetAllProductByCategoryPrimeStmt, err = db.Prepare("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesPrime ON tblProducts.ProductID = tblProductsCategoriesPrime.ProductID JOIN tblCategoriesPrime ON tblProductsCategoriesPrime.CategoryID = tblCategoriesPrime.CategoryID WHERE tblCategoriesPrime.CategoryName = ?") 
+	// prep.GetAllProductByCategoryPrimeStmt, err = db.Prepare("SELECT tblProducts.Product_ID, tblProducts.Product_Name, tblProducts.Product_Description, tblProducts.Product_Price FROM tblProducts JOIN tblProductsCategoriesPrime ON tblProducts.Product_ID = tblProductsCategoriesPrime.Product_ID JOIN tblCategoriesPrime ON tblProductsCategoriesPrime.Category_ID = tblCategoriesPrime.Category_ID WHERE tblCategoriesPrime.CategoryName = ?") 
 	// if err != nil{
 	// 	log.Fatal(err)
 	// }
 
-	// prep.GetAllProductByCategorySubStmt, err = db.Prepare("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesSub ON tblProducts.ProductID = tblProductsCategoriesSub.ProductID JOIN tblCategoriesSub ON tblProductsCategoriesSub.CategoryID = tblCategoriesSub.CategoryID WHERE tblCategoriesSub.CategoryName = ?") 
+	// prep.GetAllProductByCategorySubStmt, err = db.Prepare("SELECT tblProducts.Product_ID, tblProducts.Product_Name, tblProducts.Product_Description, tblProducts.Product_Price FROM tblProducts JOIN tblProductsCategoriesSub ON tblProducts.Product_ID = tblProductsCategoriesSub.Product_ID JOIN tblCategoriesSub ON tblProductsCategoriesSub.Category_ID = tblCategoriesSub.Category_ID WHERE tblCategoriesSub.CategoryName = ?") 
 	// if err != nil{
 	// 	log.Fatal(err)
 	// }
 
-	// prep.GetAllProductByCategoryFinalStmt, err = db.Prepare("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesFinal ON tblProducts.ProductID = tblProductsCategoriesFinal.ProductID JOIN tblCategoriesFinal ON tblProductsCategoriesFinal.CategoryID = tblCategoriesFinal.CategoryID WHERE tblCategoriesFinal.CategoryName = ?") 
+	// prep.GetAllProductByCategoryFinalStmt, err = db.Prepare("SELECT tblProducts.Product_ID, tblProducts.Product_Name, tblProducts.Product_Description, tblProducts.Product_Price FROM tblProducts JOIN tblProductsCategoriesFinal ON tblProducts.Product_ID = tblProductsCategoriesFinal.Product_ID JOIN tblCategoriesFinal ON tblProductsCategoriesFinal.Category_ID = tblCategoriesFinal.Category_ID WHERE tblCategoriesFinal.CategoryName = ?") 
 	if err != nil{
 		log.Fatal(err)
 	}
@@ -72,10 +72,10 @@ func(prep *PrepareStatmentsProducts) GetAllProducts(db *sql.DB) []ProductJSON {
 	for rows.Next(){
 		prodJSON := ProductJSON{}
 		err := rows.Scan(
-			&prodJSON.ProductID, 
-			&prodJSON.ProductName, 
-			&prodJSON.ProductDescription, 
-			&prodJSON.ProductPrice, 
+			&prodJSON.Product_ID, 
+			&prodJSON.Product_Name, 
+			&prodJSON.Product_Description, 
+			&prodJSON.Product_Price, 
 			&prodJSON.SKU, 
 			&prodJSON.UPC, 
 			&prodJSON.PRIMARY_IMAGE,
@@ -95,10 +95,10 @@ func(prep *PrepareStatmentsProducts) GetOneProduct(db *sql.DB, id int) ProductJS
 	prodJSON := ProductJSON{}
 	
 	err := rows.Scan(
-		&prodJSON.ProductID, 
-		&prodJSON.ProductName, 
-		&prodJSON.ProductDescription, 
-		&prodJSON.ProductPrice, 
+		&prodJSON.Product_ID, 
+		&prodJSON.Product_Name, 
+		&prodJSON.Product_Description, 
+		&prodJSON.Product_Price, 
 		&prodJSON.SKU, 
 		&prodJSON.UPC, 
 		&prodJSON.PRIMARY_IMAGE,
@@ -120,10 +120,10 @@ func(prep *PrepareStatmentsProducts) GetCategoryProduct(db *sql.DB, category int
 	products := []ProductJSON{}
 	for rows.Next(){
 		err := rows.Scan(
-			&prodJSON.ProductID, 
-			&prodJSON.ProductName, 
-			&prodJSON.ProductDescription, 
-			&prodJSON.ProductPrice, 
+			&prodJSON.Product_ID, 
+			&prodJSON.Product_Name, 
+			&prodJSON.Product_Description, 
+			&prodJSON.Product_Price, 
 			&prodJSON.SKU, 
 			&prodJSON.UPC, 
 			// &prodJSON.PRIMARY_IMAGE,
@@ -146,10 +146,10 @@ func(prep *PrepareStatmentsProducts) GetProductCategoryFinal(db *sql.DB, categor
 	products := []ProductJSON{}
 	for rows.Next(){
 		err := rows.Scan(
-			&prodJSON.ProductID, 
-			&prodJSON.ProductName, 
-			&prodJSON.ProductDescription, 
-			&prodJSON.ProductPrice, 
+			&prodJSON.Product_ID, 
+			&prodJSON.Product_Name, 
+			&prodJSON.Product_Description, 
+			&prodJSON.Product_Price, 
 			// &prodJSON.SKU, 
 			// &prodJSON.UPC, 
 			// &prodJSON.PRIMARY_IMAGE,

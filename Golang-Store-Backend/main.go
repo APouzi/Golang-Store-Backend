@@ -97,8 +97,8 @@ func initDB() (*sql.DB,*database.Models){
 		log.Fatal("Connection Test had failed")
 	}
 
-	// PopulateProductTables(db)
-	// PopulateTestUsers(db)
+	PopulateProductTables(db)
+	PopulateTestUsers(db)
 	
 
 	database := &database.Models{}
@@ -162,7 +162,7 @@ func PopulateProductTables(db *sql.DB) {
 	}
 
 	for i := 0.00; i <= 10; i++{
-		_,err = db.Exec("INSERT INTO tblProducts (ProductName, ProductDescription, ProductPrice, SKU, UPC) VALUES(?,?,?,?,?)", "testProductPopulate","This is a description!",10.85+i,"SKUABC123","21124214311A")
+		_,err = db.Exec("INSERT INTO tblProducts (Product_Name, Product_Description, Product_Price, SKU, UPC) VALUES(?,?,?,?,?)", "testProductPopulate","This is a description!",10.85+i,"SKUABC123","21124214311A")
 		if err != nil{
 			log.Fatal("Error with tblProducts")
 		}
@@ -171,41 +171,41 @@ func PopulateProductTables(db *sql.DB) {
 	// if err != nil{
 	// 	log.Println("Error inserting tblCategoriesPrime")
 	// }
-	// _,err =  db.Exec("INSERT INTO tblProductsCategoriesPrime(ProductID, CategoryID) VALUES(1,1)")
+	// _,err =  db.Exec("INSERT INTO tblProductsCategoriesPrime(Product_ID, Category_ID) VALUES(1,1)")
 	// if err != nil{
 	// 	log.Println("Error inserting into tblProductsCategoriesPrime", err)
 	// }
-	// _,err =  db.Exec("INSERT INTO tblProductsCategoriesPrime(ProductID, CategoryID) VALUES(2,1)")
+	// _,err =  db.Exec("INSERT INTO tblProductsCategoriesPrime(Product_ID, Category_ID) VALUES(2,1)")
 	// if err != nil{
 	// 	log.Println("Error inserting into tblProductCategoies")
 	// }
 
 	resultProd := database.Product{}
-	row := db.QueryRow("select ProductID, ProductName, ProductDescription, ProductPrice from tblProducts where ProductID = ?",4)
+	row := db.QueryRow("select Product_ID, Product_Name, Product_Description, Product_Price from tblProducts where Product_ID = ?",4)
 	if row == nil{
 		fmt.Println("Nothing returned!")
 	}
-	err = row.Scan(&resultProd.ProductID,&resultProd.ProductName,&resultProd.ProductDescription, &resultProd.ProductPrice)
+	err = row.Scan(&resultProd.Product_ID,&resultProd.Product_Name,&resultProd.Product_Description, &resultProd.Product_Price)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	listPrint:= []database.Product{}
-	// rows, err := db.Query("SELECT tblProducts.ProductID, tblProducts.ProductName, tblProducts.ProductDescription, tblProducts.ProductPrice FROM tblProducts JOIN tblProductsCategoriesPrime ON tblProducts.ProductID = tblProductsCategoriesPrime.ProductID JOIN tblCategoriesPrime ON tblProductsCategoriesPrime.CategoryID = tblCategoriesPrime.CategoryID WHERE tblCategoriesPrime.CategoryName = ?", "Test Category" )
+	// rows, err := db.Query("SELECT tblProducts.Product_ID, tblProducts.Product_Name, tblProducts.Product_Description, tblProducts.Product_Price FROM tblProducts JOIN tblProductsCategoriesPrime ON tblProducts.Product_ID = tblProductsCategoriesPrime.Product_ID JOIN tblCategoriesPrime ON tblProductsCategoriesPrime.Category_ID = tblCategoriesPrime.Category_ID WHERE tblCategoriesPrime.CategoryName = ?", "Test Category" )
 	if err != nil{
 		log.Fatal("Error with category", err)
 	}
 	// defer rows.Close()
 	// for rows.Next(){
 	// 	resultProd2 := database.Product{}
-	// 	rows.Scan(&resultProd2.ProductID, &resultProd2.ProductName, &resultProd2.ProductDescription, &resultProd2.ProductPrice)
+	// 	rows.Scan(&resultProd2.Product_ID, &resultProd2.Product_Name, &resultProd2.Product_Description, &resultProd2.Product_Price)
 	// 	listPrint = append(listPrint, resultProd2)
 	// }
 	fmt.Println(resultProd)
 	fmt.Println("Population of tables has been completed!")
 	fmt.Println("Categories:",listPrint)
 	for _,v := range listPrint{
-		fmt.Println(v.ProductName)
+		fmt.Println(v.Product_Name)
 	}
 	//Test this out!
 
