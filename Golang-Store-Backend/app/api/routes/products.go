@@ -437,9 +437,10 @@ func(route *Routes) CreateProduct(w http.ResponseWriter, r *http.Request){
 
 
 type VariationCreate struct{
+	ProductID int64 `json:"Product_ID"`
 	Name string `json:"Variation_Name"`
 	Description string `json:"Variation_Description"`
-	Price string `json:"Variation_Price"`
+	Price float32 `json:"Variation_Price"`
 	PrimaryImage string `json:"Primary_Image"`
 	VariationQuantity int  `json:"Variation_Quantity"`
 	LocationAt string `json:"Location_At"`
@@ -450,7 +451,17 @@ func (route *Routes) CreateVariation(w http.ResponseWriter, r *http.Request){
 	variation := VariationCreate{}
 	helpers.ReadJSON(w,r, &variation)
 // Check if product exists, if not, then return false
-	_, err := route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price) VALUES(?,?,?,?)", variation.Name, variation.Description, variation.Price)
+	row := route.DB.QueryRow("SELECT Product_ID FROM tblProducts WHERE Product_ID = ?",variation.ProductID)
+	if row.Err() != nil{
+		fmt.Println(row.Err().Error())
+		return
+	}
+	var exists bool
+	if row.Scan(&exists); exists == false {
+		fmt.Println("no rows")
+		return
+	}
+	_, err := route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price) VALUES(?,?,?,?)", variation.ProductID,variation.Name, variation.Description, variation.Price)
 	if err != nil{
 		fmt.Println("insert into tblProductVariation failed")
 		fmt.Println(err)
