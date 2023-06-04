@@ -47,6 +47,7 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 
 	// Admin need to lockdown based on jwt payload and scope
 	digest.Post("/product/", r.CreateProduct)
+	digest.Post("/product/variation", r.CreateVariation)
 	digest.Post("/category/prime", r.CreatePrimeCategory)
 	digest.Post("/category/sub", r.CreateSubCategory)
 	digest.Post("/category/final", r.CreateFinalCategory)
