@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS tblUserWishList(
 
 CREATE TABLE IF NOT EXISTS tblWishlistProduct(
   WishlistID INT,
-  ProductID INT,
+  Product_ID INT,
   FOREIGN KEY (WishlistID) REFERENCES tblWishlistProfile (WishlistID) ON DELETE CASCADE,
-  FOREIGN KEY (ProductID) REFERENCES tblProducts (ProductID) ON DELETE CASCADE
+  FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE
 );

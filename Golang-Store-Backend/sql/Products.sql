@@ -26,35 +26,35 @@ CREATE TABLE IF NOT EXISTS tblProductVariation (
 );
 
 CREATE TABLE IF NOT EXISTS tblProductInventory (
-  Inv_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+  Inv_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   Variation_ID INT NOT NULL,
   Quantity INT NOT NULL,
   FOREIGN KEY (Variation_ID) REFERENCES tblProductVariation (Variation_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tblLocation (
-  Location_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+  Location_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   Inv_ID INT NOT NULL,
   Location_At VARCHAR(255) NOT NULL,
   FOREIGN KEY (Inv_ID) REFERENCES tblProductInventory (Inv_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tblCategoriesPrime (
-    CategoryID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Category_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     CategoryName VARCHAR(255) NOT NULL,
     CategoryDescription TEXT
 );
 
 
 CREATE TABLE IF NOT EXISTS tblCategoriesSub (
-    CategoryID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Category_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     CategoryName VARCHAR(255) NOT NULL,
     CategoryDescription TEXT
 );
 
 
 CREATE TABLE IF NOT EXISTS tblCategoriesFinal (
-    CategoryID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Category_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     CategoryName VARCHAR(255) NOT NULL,
     CategoryDescription TEXT
 );
@@ -62,28 +62,28 @@ CREATE TABLE IF NOT EXISTS tblCategoriesFinal (
 CREATE TABLE IF NOT EXISTS tblCatPrimeSub (
   CatPrimeID INT NOT NULL,
   CatSubID INT NOT NULL,
-  FOREIGN KEY (CatPrimeID) REFERENCES tblCategoriesPrime (CategoryID) ON DELETE CASCADE,
-  FOREIGN KEY (CatSubID) REFERENCES tblCategoriesSub (CategoryID) ON DELETE CASCADE
+  FOREIGN KEY (CatPrimeID) REFERENCES tblCategoriesPrime (Category_ID) ON DELETE CASCADE,
+  FOREIGN KEY (CatSubID) REFERENCES tblCategoriesSub (Category_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tblCatSubFinal (
   CatSubID INT NOT NULL,
   CatFinalID INT NOT NULL,
-  FOREIGN KEY (CatSubID) REFERENCES tblCategoriesSub (CategoryID) ON DELETE CASCADE,
-  FOREIGN KEY (CatFinalID) REFERENCES tblCategoriesFinal (CategoryID) ON DELETE CASCADE
+  FOREIGN KEY (CatSubID) REFERENCES tblCategoriesSub (Category_ID) ON DELETE CASCADE,
+  FOREIGN KEY (CatFinalID) REFERENCES tblCategoriesFinal (Category_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tblCatFinalProd (
   CatFinalID INT NOT NULL,
-  ProductID INT NOT NULL,
-  FOREIGN KEY (CatFinalID) REFERENCES tblCategoriesFinal (CategoryID) ON DELETE CASCADE,
-  FOREIGN KEY (ProductID) REFERENCES tblProducts (ProductID) ON DELETE CASCADE
+  Product_ID INT NOT NULL,
+  FOREIGN KEY (CatFinalID) REFERENCES tblCategoriesFinal (Category_ID) ON DELETE CASCADE,
+  FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE
   
 );
 
 
 CREATE TABLE IF NOT EXISTS tblDiscount (
-  DiscountID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  Discount_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   DiscountCode VARCHAR(255) NOT NULL,
   DiscountPercentage DECIMAL(5,2) NOT NULL,
   DiscountStartDate DATE,
@@ -91,34 +91,34 @@ CREATE TABLE IF NOT EXISTS tblDiscount (
 );
 
 CREATE TABLE IF NOT EXISTS tblProductDiscount (
-  ProductID INT NOT NULL,
-  DiscountID INT NOT NULL,
-  PRIMARY KEY (ProductID, DiscountID),
-  FOREIGN KEY (ProductID) REFERENCES tblProducts (ProductID) ON DELETE CASCADE,
-  FOREIGN KEY (DiscountID) REFERENCES tblDiscount (DiscountID) ON DELETE CASCADE
+  Product_ID INT NOT NULL,
+  Discount_ID INT NOT NULL,
+  PRIMARY KEY (Product_ID, Discount_ID),
+  FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE,
+  FOREIGN KEY (Discount_ID) REFERENCES tblDiscount (Discount_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tblImages (
   ImageID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  ProductID INT NOT NULL,
+  Product_ID INT NOT NULL,
   ImageURL VARCHAR(255) NOT NULL,
-  FOREIGN KEY (ProductID) REFERENCES tblProducts (ProductID) ON DELETE CASCADE
+  FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tblVariation (
-  VariationID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  ProductID INT NOT NULL,
+  Variation_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  Product_ID INT NOT NULL,
   VariationName VARCHAR(255) NOT NULL,
   VariationDescription TEXT,
-  FOREIGN KEY (ProductID) REFERENCES tblProducts (ProductID) ON DELETE CASCADE
+  FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tblAttribute (
   AttributeID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  VariationID INT NOT NULL,
+  Variation_ID INT NOT NULL,
   AttributeName VARCHAR(255) NOT NULL,
   AttributeValue VARCHAR(255) NOT NULL,
-  FOREIGN KEY (VariationID) REFERENCES tblVariation (VariationID) ON DELETE CASCADE
+  FOREIGN KEY (Variation_ID) REFERENCES tblVariation (Variation_ID) ON DELETE CASCADE
 );
 
-CREATE VIEW PrimeSubFinalCategoryProducts AS SELECT tblProducts.ProductID, tblProducts.ProductName, tblCategoriesPrime.CategoryName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.ProductID = tblProducts.ProductID JOIN tblCategoriesFinal ON tblCategoriesFinal.CategoryID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.CategoryID JOIN tblCategoriesSub ON tblCategoriesSub.CategoryID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatSubID = tblCategoriesSub.CategoryID JOIN tblCategoriesPrime ON tblCategoriesPrime.CategoryID = tblCatPrimeSub.CatPrimeID ;
+CREATE VIEW PrimeSubFinalCategoryProducts AS SELECT tblProducts.Product_ID, tblProducts.Product_Name, tblCategoriesPrime.CategoryName FROM tblProducts JOIN tblCatFinalProd ON tblCatFinalProd.Product_ID = tblProducts.Product_ID JOIN tblCategoriesFinal ON tblCategoriesFinal.Category_ID = tblCatFinalProd.CatFinalID JOIN tblCatSubFinal ON tblCatSubFinal.CatFinalID = tblCategoriesFinal.Category_ID JOIN tblCategoriesSub ON tblCategoriesSub.Category_ID = tblCatSubFinal.CatSubID JOIN tblCatPrimeSub ON tblCatPrimeSub.CatSubID = tblCategoriesSub.Category_ID JOIN tblCategoriesPrime ON tblCategoriesPrime.Category_ID = tblCatPrimeSub.CatPrimeID ;
