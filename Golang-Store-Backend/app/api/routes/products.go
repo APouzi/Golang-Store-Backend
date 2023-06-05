@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -446,6 +447,16 @@ type VariationCreate struct{
 	LocationAt string `json:"Location_At"`
 }
 
+type ProdExist struct{
+	ProductExists bool `json:"Product_Exists"`
+	Message string `json:"Message"`
+}
+
+type PrdCrtdNoLocation struct{
+	VariationID int64 `json:"Product_ID"`
+	LocationExists bool `json:"Location_Exists"`
+}
+
 func (route *Routes) CreateVariation(w http.ResponseWriter, r *http.Request){
 
 	variation := VariationCreate{}
@@ -457,20 +468,49 @@ func (route *Routes) CreateVariation(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	// DELETE
-	if variation.PrimaryImage == "" {
 
-		fmt.Println("image no")
-	}
 	var exists bool
 	if row.Scan(&exists); exists == false {
-		fmt.Println("no rows")
+		
+		msg := ProdExist{}
+		msg.ProductExists = false
+		msg.Message = "Product provided does not exist"
+		helpers.WriteJSON(w,http.StatusAccepted,msg)
+		log.Println("Variation Creation completed")
 		return
 	}
-	_, err := route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price) VALUES(?,?,?,?)", variation.ProductID,variation.Name, variation.Description, variation.Price)
+	var varit sql.Result
+	var err error
+	if variation.PrimaryImage != "" {
+		varit, err = route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price) VALUES(?,?,?,?)", variation.ProductID,variation.Name, variation.Description, variation.Price)
+		if err != nil{
+			fmt.Println("insert into tblProductVariation failed")
+			fmt.Println(err)
+		}
+	}
+	varit, err = route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price, PRIMARY_IMAGE) VALUES(?,?,?,?,?)", variation.ProductID,variation.Name, variation.Description, variation.Price, variation.PrimaryImage)
 	if err != nil{
 		fmt.Println("insert into tblProductVariation failed")
 		fmt.Println(err)
 	}
-//Check if location exists, if not, then we should just create one. It only exists if  
+//Check if location exists, if not, then we should prompt them to create one
+	varitID, err := varit.LastInsertId()
+	if err != nil{
+		fmt.Println("issue with Variation_ID failed")
+		fmt.Println(err)
+	}
+	if variation.LocationAt == ""{
+		msg := PrdCrtdNoLocation{}
+		msg.LocationExists = false
+		msg.VariationID = varitID
+		helpers.WriteJSON(w, http.StatusAccepted, msg)
+		return
+	}
+
+	 
 	
+}
+
+func(route *Routes) CreateLocation(w http.ResponseWriter, r *http.Request){
+	route.DB.Exec("INSERT INTO tbl")
 }
