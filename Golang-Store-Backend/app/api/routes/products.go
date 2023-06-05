@@ -452,7 +452,7 @@ type ProdExist struct{
 	Message string `json:"Message"`
 }
 
-type PrdCrtdNoLocation struct{
+type variCrtd struct{
 	VariationID int64 `json:"Product_ID"`
 	LocationExists bool `json:"Location_Exists"`
 }
@@ -479,6 +479,7 @@ func (route *Routes) CreateVariation(w http.ResponseWriter, r *http.Request){
 		log.Println("Variation Creation completed")
 		return
 	}
+	// Implement the returns for this to allow for proper exiting 
 	var varit sql.Result
 	var err error
 	if variation.PrimaryImage != "" {
@@ -487,6 +488,8 @@ func (route *Routes) CreateVariation(w http.ResponseWriter, r *http.Request){
 			fmt.Println("insert into tblProductVariation failed")
 			fmt.Println(err)
 		}
+
+		helpers.WriteJSON(w, http.StatusCreated,)
 	}
 	varit, err = route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price, PRIMARY_IMAGE) VALUES(?,?,?,?,?)", variation.ProductID,variation.Name, variation.Description, variation.Price, variation.PrimaryImage)
 	if err != nil{
@@ -500,7 +503,7 @@ func (route *Routes) CreateVariation(w http.ResponseWriter, r *http.Request){
 		fmt.Println(err)
 	}
 	if variation.LocationAt == ""{
-		msg := PrdCrtdNoLocation{}
+		msg := variCrtd{}
 		msg.LocationExists = false
 		msg.VariationID = varitID
 		helpers.WriteJSON(w, http.StatusAccepted, msg)
@@ -511,6 +514,53 @@ func (route *Routes) CreateVariation(w http.ResponseWriter, r *http.Request){
 	
 }
 
-func(route *Routes) CreateLocation(w http.ResponseWriter, r *http.Request){
-	route.DB.Exec("INSERT INTO tbl")
+type ProdInvLocCreation struct{
+	VarID int64 `json:"Variation_ID"`
+	Quantity int `json:"Quantity"`
+	Location string `json:"Location"`
+}
+type PILCreated struct{
+	InvID int64 `json:"Inv_ID"`
+	Quantity int `json:"Quantity"`
+	Location string `json:"Location"`
+}
+
+func(route *Routes) CreateInventoryLocation(w http.ResponseWriter, r *http.Request){
+	// Test for Variantion existness
+	pil := ProdInvLocCreation{}
+	helpers.ReadJSON(w,r,&pil)
+	row := route.DB.QueryRow("SELECT Product_ID FROM tblProductVariation WHERE Product_ID = ?",pil.VarID)
+	if row.Err() != nil{
+		fmt.Println(row.Err().Error())
+		return
+	}
+	var exists bool
+	if row.Scan(&exists); exists == false {
+		
+		msg := ProdExist{}
+		msg.ProductExists = false
+		msg.Message = "Variation record provided does not exist"
+		helpers.WriteJSON(w,http.StatusAccepted,msg)
+		log.Println("Location Creation failed")
+		return
+	}
+	res ,err:= route.DB.Exec("INSERT INTO tblProductInventoryLocation(Variation_ID, Quantity, Location_At) VALUES(?,?,?)")
+	
+	if err != nil{
+		fmt.Println("failed to create tblProductInventoryLocation")
+		fmt.Println(err)
+		helpers.ErrorJSON(w,err,http.StatusForbidden)
+		return
+	}
+
+	pilID, err := res.LastInsertId()
+	
+	if err != nil{
+		fmt.Println("result of tblProductInventoryLocation failed")
+	}
+	pilReturn := PILCreated{}
+	pilReturn.InvID = pilID
+	pilReturn.Quantity = pil.Quantity
+	pilReturn.Location = pil.Location
+	helpers.WriteJSON(w, http.StatusAccepted, pil)
 }
