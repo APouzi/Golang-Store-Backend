@@ -480,16 +480,21 @@ func (route *Routes) CreateVariation(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	// Implement the returns for this to allow for proper exiting 
+
 	var varit sql.Result
 	var err error
 	if variation.PrimaryImage != "" {
+		varitCrt := variCrtd{}
 		varit, err = route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price) VALUES(?,?,?,?)", variation.ProductID,variation.Name, variation.Description, variation.Price)
 		if err != nil{
 			fmt.Println("insert into tblProductVariation failed")
 			fmt.Println(err)
 		}
-
-		helpers.WriteJSON(w, http.StatusCreated,)
+		varitCrt.VariationID, err = varit.LastInsertId()
+		if err != nil{
+			fmt.Println(err)
+		}
+		// helpers.WriteJSON(w, http.StatusCreated,varitCrt)
 	}
 	varit, err = route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price, PRIMARY_IMAGE) VALUES(?,?,?,?,?)", variation.ProductID,variation.Name, variation.Description, variation.Price, variation.PrimaryImage)
 	if err != nil{
@@ -529,7 +534,7 @@ func(route *Routes) CreateInventoryLocation(w http.ResponseWriter, r *http.Reque
 	// Test for Variantion existness
 	pil := ProdInvLocCreation{}
 	helpers.ReadJSON(w,r,&pil)
-	row := route.DB.QueryRow("SELECT Product_ID FROM tblProductVariation WHERE Product_ID = ?",pil.VarID)
+	row := route.DB.QueryRow("SELECT Variation_ID FROM tblProductVariation WHERE Variation_ID = ?",pil.VarID)
 	if row.Err() != nil{
 		fmt.Println(row.Err().Error())
 		return
@@ -544,7 +549,7 @@ func(route *Routes) CreateInventoryLocation(w http.ResponseWriter, r *http.Reque
 		log.Println("Location Creation failed")
 		return
 	}
-	res ,err:= route.DB.Exec("INSERT INTO tblProductInventoryLocation(Variation_ID, Quantity, Location_At) VALUES(?,?,?)")
+	res ,err:= route.DB.Exec("INSERT INTO tblProductInventoryLocation(Variation_ID, Quantity, Location_At) VALUES(?,?,?)", pil.VarID,pil.Quantity,pil.Location)
 	
 	if err != nil{
 		fmt.Println("failed to create tblProductInventoryLocation")
