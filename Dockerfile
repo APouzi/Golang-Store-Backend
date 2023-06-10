@@ -11,8 +11,9 @@ RUN go mod download && go mod verify
 # COPY . .
 COPY /Golang-Store-Backend .
 
-# RUN go build -o app .
+RUN go build -o golang-shop .
 # RUN chmod +x app
 
 EXPOSE 8000
-CMD ["go", "run", "."]
+CMD ["./golang-shop"]
+# CMD ["go", "run", "."]
