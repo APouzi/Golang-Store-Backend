@@ -12,7 +12,23 @@ import (
 
 
 
+func (route *Routes) AdminSuperUserCreation(w http.ResponseWriter, r *http.Request){
+	query := "SELECT COUNT(UserID) FROM tblUser"
+	sqlRes := route.DB.QueryRow(query)
+	if sqlRes.Err()!= nil{
+		fmt.Println("Error in AdminSuperUserCreation Count check", sqlRes.Err().Error())
+	}
+	var rowCount int
+	sqlRes.Scan(&rowCount)
+	if rowCount != 0{
+		fmt.Println("Can't create super user, users already exist", rowCount)
+		return
+	}
 
+	fmt.Println("hit here AdminSuperUserCreation")
+
+
+}
 
 type User struct{
 	Email string `json:"Email"`
