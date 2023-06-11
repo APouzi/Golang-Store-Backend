@@ -34,12 +34,22 @@ func InitUserStatments(db *sql.DB) *UserStatments {
 	return prep
 }
 
-func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstName string, lastName string, Email string) (int64, error){
-	sqlStmt := "SELECT email FROM tblUser WHERE user = email"
-	row := db.QueryRow(sqlStmt, Email).Scan(&Email)
-	if row == sql.ErrNoRows{
+func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstName string, lastName string, Email string) (int64, int64, error){
+	sqlStmt := "SELECT COUNT(email) FROM tblUser WHERE Email = ?"
+	var accCheck int
+	var failedtransactionerror error
+	row := db.QueryRow(sqlStmt, Email)
+	err := row.Scan(&accCheck)
+	if err != nil{
+		fmt.Println("scanning error in RegisterUSerIntoDB", err)
+		failedtransactionerror = fmt.Errorf("this user already exists")
+		return -1, -1,failedtransactionerror
+	}
+	
+	if accCheck != 0{
 		fmt.Println("This user already exists")
-		return -1, fmt.Errorf("This user already exists")
+		failedtransactionerror = fmt.Errorf("this user already exists")
+		return -1, -1,failedtransactionerror
 	}
 	passByte, err := bcrypt.GenerateFromPassword([]byte(Password),bcrypt.DefaultCost)
 	if err != nil{
@@ -48,7 +58,7 @@ func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstN
 	tx, err := db.Begin()
 	defer func(){
 		if err != nil{
-			fmt.Println("Transaction for profile failed")
+			fmt.Println("Transaction for profile failed", err)
 			tx.Rollback()
 			return
 		}
@@ -58,18 +68,21 @@ func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstN
 
 	id, err := response.LastInsertId()
 	if err != nil {
-		return 0, err
+		return 0, -1,err
 	}
 	queryProfile := "INSERT INTO tblUserProfile(UserID, PhoneNumberCell, PhoneNumberHome) VALUES(?,?,?)"
 
-	_,err = tx.Exec(queryProfile,id, "33333","44444")
+	profRes,err := tx.Exec(queryProfile,id, "33333","44444")
 
 	if err != nil{
 		fmt.Println("Registering User Into DB Error:", err)
 	}
-	
+	ProfID,err := profRes.LastInsertId()
+	if err != nil{
+		fmt.Println("Profile ID Error:", err)
+	}
 	tx.Commit()
-	return id, nil
+	return id, ProfID,nil
 }
 
 func (stmt *UserStatments) LoginUserDB(db *sql.DB, email string)(string, string, int64,error){
