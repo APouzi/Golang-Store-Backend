@@ -31,6 +31,7 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 
 	//Index and Product
 	digest.Get("/", r.Index)
+	digest.Post("/superusercreation",r.AdminSuperUserCreation)
 	
 	digest.Get("/product/{Product_ID}",r.GetOneProductsEndPoint)
 	digest.Get("/products/",r.GetAllProductsEndPoint)
