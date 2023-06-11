@@ -20,6 +20,8 @@ func (app *Config) GetAllowedOrigins() []string{
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
+	fmt.Println("GetAllowedOrigins completed")
+	fmt.Println("AllowedOriginsFromEnv:",AllowedOriginsFromEnv)
 	return AllowedOriginsFromEnv
 }
 func (app *Config) StartRouter() http.Handler { // Change the receiver to (*Config)
