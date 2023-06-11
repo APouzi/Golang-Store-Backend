@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -21,17 +22,37 @@ type Config struct{
 	Models *database.Models
 }
 
-
 func main(){
 	// argsRetrieve := os.Args[0]
 	// if argsRetrieve == "initProd"{
 	// 	fmt.Println("It did it!")
 	// }
+
 	connection, models := initDB()
+
+	// flags to initailize this
+	var initializeDB, initailizeView string
+
+	flag.StringVar(&initializeDB, "initdb","","Initalize Database")
+	flag.StringVar(&initailizeView,"initView","","Intialize Views")
+	flag.Parse()
+	
 	app := Config{
 		DB: connection,
 		Models: models,
 	}
+	
+	if initializeDB == "t" || initializeDB == "T"{
+		PopulateProductTables(app.DB)
+		InitateAndPopulateUsers(app.DB)
+	}
+	if initailizeView == "t" || initailizeView == "T"{
+		IntializeViews(app.DB)
+	}
+	// if TestInitCreateThenDelete(app.DB) == false{
+	// 	log.Fatal("Connection Test had failed")
+	// }
+
 	fmt.Printf("Starting Store Backend on port %d \n", webport)
 
 	serve := &http.Server{
@@ -45,13 +66,12 @@ func main(){
 	}
 	
 	// fmt.Println("test", reflect.TypeOf(router))
+	
 }
 
 
 // Initializing the environment variables to run. 
 func init() {
-	
-    // Get the absolute path to the directory where the executable is located
     exeDir, err := filepath.Abs("./")
     if err != nil {
         log.Fatal(err)
@@ -92,13 +112,6 @@ func initDB() (*sql.DB,*database.Models){
 		time.Sleep(2 * time.Second)
 		
 	}
-	
-	if TestInitCreateThenDelete(db) == false{
-		log.Fatal("Connection Test had failed")
-	}
-
-	PopulateProductTables(db)
-	PopulateTestUsers(db)
 	
 
 	database := &database.Models{}
@@ -226,7 +239,7 @@ type userProfile struct{
 	PhoneNumberHome string
 }
 
-func PopulateTestUsers(db *sql.DB){
+func InitateAndPopulateUsers(db *sql.DB){
 	query, err := ioutil.ReadFile("./sql/User.sql")
 
 	if err != nil{
@@ -234,11 +247,19 @@ func PopulateTestUsers(db *sql.DB){
 	}
 
 	_, err = db.Exec(string(query))
+	if err != nil{
+		fmt.Println("SQL user failed to initalized")
+		log.Fatalln(err)
+	}
 
 	_, err = db.Exec("INSERT INTO tblUser (FirstName, LastName, Email) VALUES(?,?,?)","TestFirstName","TestLastName", "TestEmail@email.com" )
-
+	if err != nil{
+		fmt.Println("Problem with query to insert in tblUser")
+	}
 	_, err = db.Exec("INSERT INTO tblUserProfile (UserID, PhoneNumberCell, PhoneNumberHome) VALUES(?,?,?)", 1, "6195555555","8585555555" )
-
+	if err != nil{
+		fmt.Println("Problem with query to insert in tblUserProfile")
+	}
 	row := db.QueryRow("SELECT UserID, FirstName, LastName, Email FROM tblUser WHERE UserId = 1")
 
 	rowProfile := db.QueryRow("SELECT PhoneNumberCell, PhoneNumberHome FROM tblUserProfile JOIN tblUser ON tblUserProfile.UserID = tblUser.UserID where tblUser.UserID = 1")
@@ -251,4 +272,18 @@ func PopulateTestUsers(db *sql.DB){
 	rowProfile.Scan(&userProf.PhoneNumberCell, &userProf.PhoneNumberHome)
 	fmt.Println("users:",user)
 	fmt.Println("userProfile:",userProf)
+}
+
+func IntializeViews(db *sql.DB) {
+	
+	query, err := ioutil.ReadFile("./sql/Views.sql")
+
+	if err != nil{
+		log.Fatal("Error when loading sql file",err)
+	}
+
+	_, err = db.Exec(string(query))
+	if err != nil{
+		log.Fatal("IntializeViews query execution failed", err)
+	}
 }
