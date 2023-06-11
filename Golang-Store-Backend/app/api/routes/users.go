@@ -10,32 +10,46 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type TestUser struct{
-	PasswordHash string `json:"PasswordHash"`
+
+
+
+
+type User struct{
+	Email string `json:"Email"`
+	Password string `json:"Password"`
 	FirstName string `json:"FirstName"`
 	LastName string `json:"LastName"`
-	Email string `json:"email"`
+	
+
+}
+
+type UserReturn struct{
+	ID int64 `json:"ID"`
+	ProfileID int64 `json:"ProfileID"`
+	FirstName string `json:"FirstName"`
+	LastName string `json:"LastName"`
+	Email string `json:"Email"`
 
 }
 
 func (route *Routes) Register(w http.ResponseWriter, r *http.Request){
 	db := route.DB
 
-	user := TestUser{}
+	user := User{}
 	helpers.ReadJSON(w, r, &user)
-	fmt.Println("Register",user)
 	// passByte, err := bcrypt.GenerateFromPassword([]byte(user.PasswordHash),bcrypt.DefaultCost)
 	// if err != nil{
 	// 	fmt.Println("Password Gen issue", err)
 	// }
-	id, err := route.UserQuery.RegisterUserIntoDB(db,user.PasswordHash,user.FirstName,user.LastName,user.Email)
+	id,profId, err := route.UserQuery.RegisterUserIntoDB(db,user.Password,user.FirstName,user.LastName,user.Email)
 	if err != nil{
 		fmt.Println(err)
+		helpers.ErrorJSON(w,err,http.StatusBadRequest)
 		return
 	}
 
-	fmt.Println("returned id", id)
-
+	userRet := UserReturn{ID:id, ProfileID:profId, FirstName: user.FirstName, LastName: user.LastName, Email: user.Email }
+	helpers.WriteJSON(w,http.StatusAccepted,userRet)
 	
 }
 
