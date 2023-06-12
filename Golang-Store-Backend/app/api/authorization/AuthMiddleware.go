@@ -34,7 +34,16 @@ func ValidateToken(next http.Handler) http.Handler{
 }
 
 
-// HasScope checks whether our claims have a specific scope.
+// Start of checking if given user is a SuperUser
+func HasSuperUserScope() http.Handler{
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+
+	})
+}
+
+
+
+
 func HasAdminScope(expectedScope string) bool {
 	fmt.Println("Validate hit -  scope")
     // result := strings.Split(c.Scope, " ")
@@ -46,6 +55,7 @@ func HasAdminScope(expectedScope string) bool {
 
     return false
 }
+
 
 
 
