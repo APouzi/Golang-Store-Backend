@@ -85,6 +85,48 @@ func(stmt *UserStatments)  RegisterUserIntoDB(db *sql.DB,Password string, firstN
 	return id, ProfID,nil
 }
 
+
+func(stmt *UserStatments)  RegisterAdminIntoDB(db *sql.DB,Password string, firstName string, lastName string, Email string) (int64, error){
+	sqlStmt := "SELECT COUNT(email) FROM tblUser WHERE Email = ?"
+	var accCheck int
+	var failedtransactionerror error
+	row := db.QueryRow(sqlStmt, Email)
+	err := row.Scan(&accCheck)
+	if err != nil{
+		fmt.Println("scanning error in RegisterUSerIntoDB", err)
+		failedtransactionerror = fmt.Errorf("this user already exists")
+		return -1, failedtransactionerror
+	}
+	
+	if accCheck != 0{
+		fmt.Println("This user already exists")
+		failedtransactionerror = fmt.Errorf("this user already exists")
+		return -1, failedtransactionerror
+	}
+	passByte, err := bcrypt.GenerateFromPassword([]byte(Password),bcrypt.DefaultCost)
+	if err != nil{
+		fmt.Println("Password Gen issue", err)
+	}
+	tx, err := db.Begin()
+	defer func(){
+		if err != nil{
+			fmt.Println("Transaction for profile failed", err)
+			tx.Rollback()
+			return
+		}
+	}()
+	queryUser := "INSERT INTO tblUser(PasswordHash,FirstName, LastName, Email) VALUES(?,?,?,?)"
+	response, err := tx.Exec(queryUser, passByte,firstName, lastName, Email)
+
+	id, err := response.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	tx.Commit()
+	return id, nil
+}
+
+
 func (stmt *UserStatments) LoginUserDB(db *sql.DB, email string)(string, string, int64,error){
 	var userID int64
 	var emailTwo string
