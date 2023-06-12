@@ -28,24 +28,24 @@ func ValidateToken(next http.Handler) http.Handler{
 			return
 		}
 		claims := token.Claims.(jwt.MapClaims)
-		ctx := context.WithValue(r.Context(), "userId", claims["userId"])
+		ctx := context.WithValue(r.Context(), "userid", claims["userId"])
 		next.ServeHTTP(w,r.WithContext(ctx))
 	})
 }
 
 
 // HasScope checks whether our claims have a specific scope.
-// func (c CustomClaims) HasScope(expectedScope string) bool {
-// 	fmt.Println("Validate hit -  scope")
-//     result := strings.Split(c.Scope, " ")
-//     for i := range result {
-//         if result[i] == expectedScope {
-//             return true
-//         }
-//     }
+func HasAdminScope(expectedScope string) bool {
+	fmt.Println("Validate hit -  scope")
+    // result := strings.Split(c.Scope, " ")
+    // for i := range result {
+    //     if result[i] == expectedScope {
+    //         return true
+    //     }
+    // }
 
-//     return false
-// }
+    return false
+}
 
 
 

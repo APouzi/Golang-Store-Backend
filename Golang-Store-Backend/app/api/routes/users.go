@@ -140,7 +140,7 @@ type UserProfile struct{
 }
 
 func (route *Routes) UserProfile(w http.ResponseWriter, r *http.Request){
-	userID := r.Context().Value("userId")
+	userID := r.Context().Value("userid")
 	UserProfile := &UserProfile{}
 	cell, home, err := route.UserQuery.GetUserProfile(route.DB, userID)
 
