@@ -10,7 +10,22 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type User struct{
+	Email string `json:"Email"`
+	Password string `json:"Password"`
+	FirstName string `json:"FirstName"`
+	LastName string `json:"LastName"`
+	
 
+}
+
+type AdminReturn struct{
+	ID int64 `json:"ID"`
+	FirstName string `json:"FirstName"`
+	LastName string `json:"LastName"`
+	Email string `json:"Email"`
+
+}
 
 func (route *Routes) AdminSuperUserCreation(w http.ResponseWriter, r *http.Request){
 	query := "SELECT COUNT(UserID) FROM tblUser"
@@ -24,18 +39,16 @@ func (route *Routes) AdminSuperUserCreation(w http.ResponseWriter, r *http.Reque
 		fmt.Println("Can't create super user, users already exist", rowCount)
 		return
 	}
-
-	fmt.Println("hit here AdminSuperUserCreation")
-
-
-}
-
-type User struct{
-	Email string `json:"Email"`
-	Password string `json:"Password"`
-	FirstName string `json:"FirstName"`
-	LastName string `json:"LastName"`
-	
+	user := User{}
+	helpers.ReadJSON(w, r, &user)
+	id, err := route.UserQuery.RegisterAdminIntoDB(route.DB,user.Password,user.FirstName,user.LastName,user.Email)
+	if err != nil{
+		fmt.Println(err)
+		helpers.ErrorJSON(w,err,http.StatusBadRequest)
+		return
+	}
+	userRet := AdminReturn{ID:id, FirstName: user.FirstName, LastName: user.LastName, Email: user.Email }
+	helpers.WriteJSON(w,http.StatusAccepted,userRet)
 
 }
 
