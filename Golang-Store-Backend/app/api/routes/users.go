@@ -95,15 +95,19 @@ func (route *Routes) Login(w http.ResponseWriter, r *http.Request){
 	login := LoginUser{}
 	helpers.ReadJSON(w, r, &login)
 	_, passwordStored, userID,err := route.UserQuery.LoginUserDB(db, login.Email)
+	var errRet error
 	if err != nil{
-		fmt.Println(err)
+		errRet = fmt.Errorf("User does not exist")
+		helpers.ErrorJSON(w,errRet,http.StatusBadRequest)
+		return
 	}
 
 
 	err = bcrypt.CompareHashAndPassword([]byte(passwordStored), []byte(login.Password))
 
 	if err !=nil{
-		fmt.Println("password does not match")
+		errRet = fmt.Errorf("password does not match")
+		helpers.ErrorJSON(w,errRet,http.StatusBadRequest)
 		return
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -118,7 +122,9 @@ func (route *Routes) Login(w http.ResponseWriter, r *http.Request){
 	sendBack := SendBackLogin{Token: tokenString}
 	if err != nil{
 		fmt.Println("signed token error")
-		fmt.Println(err)
+		errRet = fmt.Errorf("server issue, cannot send token")
+		helpers.ErrorJSON(w,errRet,http.StatusBadRequest)
+		return
 	}
 
 	helpers.WriteJSON(w, http.StatusAccepted, &sendBack)
