@@ -105,6 +105,7 @@ type LoginUser struct{
 type SendBackLogin struct{
 	Token string `jwt:"Email"`
 }
+
 func (route *UserRoutes) Login(w http.ResponseWriter, r *http.Request){
 	db := route.DB
 	login := LoginUser{}
@@ -143,29 +144,6 @@ func (route *UserRoutes) Login(w http.ResponseWriter, r *http.Request){
 	}
 
 	helpers.WriteJSON(w, http.StatusAccepted, &sendBack)
-}
-
-type JWTtest struct{
-	Token string `json:"JWT"`
-}
-
-func (route *UserRoutes) VerifyTest(w http.ResponseWriter, r *http.Request){
-	fmt.Println("THIS IS HIT")
-	
-	// fmt.Println("verify email",ctx)
-	// jwttest := &JWTtest{}
-	// helpers.ReadJSON(w, r, &jwttest)
-	// token, err := jwt.Parse(jwttest.Token, func(token *jwt.Token) (interface{}, error) {
-	// 	return []byte("Testing key"), nil
-	// })
-	// if err != nil{
-	// 	fmt.Println("verify test error")
-	// 	fmt.Println(err)
-	// }
-	// if token.Valid{
-	// 	fmt.Println("token validated")
-	// }
-	// fmt.Println(token.Claims)
 }
 
 type UserProfile struct{

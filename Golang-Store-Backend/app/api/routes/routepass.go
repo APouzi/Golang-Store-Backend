@@ -26,7 +26,6 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 	
 	digest.Group(func(digest chi.Router){
 		digest.Use(authorization.ValidateToken)
-		digest.Post("/users/verify",rUser.VerifyTest)
 		digest.Get("/users/profile",rUser.UserProfile)
 	})
 
