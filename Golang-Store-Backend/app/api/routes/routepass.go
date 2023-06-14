@@ -4,60 +4,61 @@ import (
 	"database/sql"
 
 	"github.com/Apouzi/golang-shop/app/api/authorization"
-	"github.com/Apouzi/golang-shop/app/api/database"
+	adminendpoints "github.com/Apouzi/golang-shop/app/api/routes/admin"
+	indexendpoints "github.com/Apouzi/golang-shop/app/api/routes/index"
+	productendpoints "github.com/Apouzi/golang-shop/app/api/routes/product"
+	userendpoints "github.com/Apouzi/golang-shop/app/api/routes/user"
 	"github.com/go-chi/chi"
 )
 
-type Routes struct{
-	DB *sql.DB
-	ProductQuery *database.PrepareStatmentsProducts
-	UserQuery *database.UserStatments
-}
+
 
 func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
-	
-	r := Routes{
-		DB: db,
-		ProductQuery: database.InitPrepare(db),
-		UserQuery: database.InitUserStatments(db),
-	}
+
+	rIndex := indexendpoints.InstanceIndexRoutes(db)
+
+	rProduct := productendpoints.InstanceProductsRoutes(db)
+
+	rUser := userendpoints.InstanceUserRoutes(db)
+
+	rAdmin := adminendpoints.InstanceAdminRoutes(db)
 
 	
 	digest.Group(func(digest chi.Router){
 		digest.Use(authorization.ValidateToken)
-		digest.Post("/users/verify",r.VerifyTest)
-		digest.Get("/users/profile",r.UserProfile)
+		digest.Post("/users/verify",rUser.VerifyTest)
+		digest.Get("/users/profile",rUser.UserProfile)
 	})
 
 	//Index and Product
-	digest.Get("/", r.Index)
-	digest.Post("/superusercreation",r.AdminSuperUserCreation)
+	digest.Get("/", rIndex.Index)
+	digest.Post("/superusercreation",rUser.AdminSuperUserCreation)
 	
-	digest.Get("/product/{Product_ID}",r.GetOneProductsEndPoint)
-	digest.Get("/products/",r.GetAllProductsEndPoint)
+	digest.Get("/product/{Product_ID}",rProduct.GetOneProductsEndPoint)
+	digest.Get("/products/",rProduct.GetAllProductsEndPoint)
 	// digest.Get("/products/{CategoryName}",r.GetProductCategoryEndPointFinal)
-	digest.Post("/users/",r.Register)
-	digest.Post("/users/login",r.Login)
+	digest.Post("/users/",rUser.Register)
+	digest.Post("/users/login",rUser.Login)
 	
 	// digest.Get("/categories/",r.GetAllCategories)
 
 	// These are testing for categories
-	digest.Post("/products/test-categories", r.CreateTestCategory)
-	digest.Get("/products/test-categories/pullTest", r.PullTestCategory)
-	digest.Post("/products/test-categories/InsertTest", r.InsertIntoFinalProd)
+	digest.Post("/products/test-categories", rProduct.CreateTestCategory)
+	digest.Get("/products/test-categories/pullTest", rProduct.PullTestCategory)
+	digest.Post("/products/test-categories/InsertTest", rAdmin.InsertIntoFinalProd)
 
 	// Admin need to lockdown based on jwt payload and scope
-	digest.Post("/products/", r.CreateProduct)
-	digest.Post("/products/variation", r.CreateVariation)
-	digest.Post("/products/inventory", r.CreateInventoryLocation)
-	digest.Post("/category/prime", r.CreatePrimeCategory)
-	digest.Post("/category/sub", r.CreateSubCategory)
-	digest.Post("/category/final", r.CreateFinalCategory)
-	digest.Post("/category/primetosub",r.ConnectPrimeToSubCategory)
-	digest.Post("/category/subtofinal",r.ConnectSubToFinalCategory)
-	digest.Post("/category/finaltoprod",r.ConnectFinalToProdCategory)
-	digest.Get("/category/primes", r.ReturnAllPrimeCategories)
-	digest.Get("/category/subs", r.ReturnAllSubCategories)
-	digest.Get("/category/finals", r.ReturnAllFinalCategories)
+	digest.Post("/products/", rAdmin.CreateProduct)
+	digest.Post("/products/variation", rAdmin.CreateVariation)
+	digest.Post("/products/inventory", rAdmin.CreateInventoryLocation)
+	digest.Post("/category/prime", rAdmin.CreatePrimeCategory)
+	digest.Post("/category/sub", rAdmin.CreateSubCategory)
+	digest.Post("/category/final", rAdmin.CreateFinalCategory)
+	digest.Post("/category/primetosub",rAdmin.ConnectPrimeToSubCategory)
+	digest.Post("/category/subtofinal",rAdmin.ConnectSubToFinalCategory)
+	digest.Post("/category/finaltoprod",rAdmin.ConnectFinalToProdCategory)
+	digest.Get("/category/primes", rAdmin.ReturnAllPrimeCategories)
+	digest.Get("/category/subs", rAdmin.ReturnAllSubCategories)
+	digest.Get("/category/finals", rAdmin.ReturnAllFinalCategories)
 	return digest
 }
