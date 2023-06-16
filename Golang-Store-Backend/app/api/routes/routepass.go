@@ -59,5 +59,6 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 	digest.Get("/category/primes", rAdmin.ReturnAllPrimeCategories)
 	digest.Get("/category/subs", rAdmin.ReturnAllSubCategories)
 	digest.Get("/category/finals", rAdmin.ReturnAllFinalCategories)
+	digest.Patch("/products/{ProductID}",rAdmin.EditProduct)
 	return digest
 }
