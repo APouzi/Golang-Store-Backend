@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Apouzi/golang-shop/app/api/helpers"
 )
@@ -442,11 +442,6 @@ type ProductEdit struct{
 	Name string `json:"Product_Name"`
 	Description string `json:"Product_Description"`
 	Price float64 `json:"Product_Price"`
-	// VariationName string `json:"Variation_Name"`
-	// VariationDescription string `json:"Variation_Description"`
-	// VariationPrice float32 `json:"Variation_Price"`
-	// VariationQuantity int  `json:"Variation_Quantity"`
-	// LocationAt string `json:"Location_At"`
 }
 
 
@@ -455,37 +450,50 @@ func (route *AdminRoutes) EditProduct(w http.ResponseWriter, r *http.Request){
 	prodEdit := ProductEdit{}
 	helpers.ReadJSON(w,r, &prodEdit)
 	var buf strings.Builder
-	fmt.Println(prodEdit)
 	buf.WriteString("UPDATE tblProducts SET")
-	if prodEdit.Name != ""{
-		buf.WriteString(" Product_Name = '")
-		buf.WriteString(prodEdit.Name)
-		buf.WriteString("'")
+	var count int = 0
+	Varib := []any{}
+	if prodEdit.Name != "" {
+		if count == 0{
+			buf.WriteString(" Product_Name = ?")
+			Varib = append(Varib, prodEdit.Name)
+			count++
+		}
+		buf.WriteString(", Product_Name = ?")
+		Varib = append(Varib, prodEdit.Name)
 	}
-	if prodEdit.Description != ""{
-		buf.WriteString(" , Product_Description = '")
-		buf.WriteString(prodEdit.Description)
-		buf.WriteString("'")
+	if prodEdit.Description != "" {
+		if count == 0{
+			buf.WriteString(" Product_Description = ?")
+			Varib = append(Varib, prodEdit.Description)
+			count++
+		}
+		buf.WriteString(", Product_Description = ?")
+		Varib = append(Varib, prodEdit.Description)
 	}
-	if prodEdit.Price != 0{
-		buf.WriteString(" , Product_Price = ")
-		iTs := strconv.FormatFloat(prodEdit.Price,'f',2,64 )
-		buf.WriteString(iTs)
-		// buf.WriteByte(',')
+	if prodEdit.Price != 0 {
+		if count == 0{
+			buf.WriteString(" Product_Price = ?")
+			Varib = append(Varib, prodEdit.Price)
+			count++
+		}
+		buf.WriteString(", Product_Price = ?")
+		Varib = append(Varib, prodEdit.Price)
 	}
-	buf.WriteString(" WHERE Product_ID = ")
-	strconv.FormatInt(prodEdit.Product_ID, 10)
-	buf.WriteString(strconv.FormatInt(prodEdit.Product_ID, 10))
-	// buf.WriteByte(';')
-	fmt.Println(buf.String())
-	res, err := route.DB.Exec(buf.String())
+	if count  == 0 {
+		helpers.WriteJSON(w,http.StatusAccepted,"failed")
+		return
+	}
+
+	buf.WriteString(", Modified_Date = ? WHERE Product_ID = ?")
+	Varib = append(Varib, time.Now(),prodEdit.Product_ID)
+	_, err := route.DB.Exec(buf.String(), Varib...)
 	if err != nil{
 		fmt.Println("err with exec Edit Product Update")
 		fmt.Println(err)
 	}
-	fmt.Println(res.RowsAffected())
 
-	helpers.WriteJSON(w,http.StatusAccepted,buf.String())
+	helpers.WriteJSON(w,http.StatusAccepted,&prodEdit)
 	
 }
 
