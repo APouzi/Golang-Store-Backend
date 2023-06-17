@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/Apouzi/golang-shop/app/api/database"
+	"github.com/Apouzi/golang-shop/app/api/helpers"
 	"github.com/go-chi/chi"
 )
 
@@ -40,21 +41,18 @@ func (route *ProductRoutes) GetAllProductsEndPoint(w http.ResponseWriter, r *htt
 
 
 func (route *ProductRoutes) GetOneProductsEndPoint(w http.ResponseWriter, r *http.Request){
-	query :=  chi.URLParam(r,"Product_ID")
-	queryToInt, err := strconv.Atoi(query)
+	query, err :=  strconv.Atoi(chi.URLParam(r,"Product_ID"))
 	if err != nil{
 		fmt.Println("String to Int failed:", err)
 	}
-	ProdJSON := route.ProductQuery.GetOneProduct(route.DB,queryToInt)
-	JSONWrite,err := json.Marshal(ProdJSON)
+	ProdJSON, err := route.ProductQuery.GetOneProduct(route.DB,query)
 	if err != nil {
 		fmt.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprint("Failed")))
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
 	}
+	helpers.WriteJSON(w, http.StatusAccepted,ProdJSON)
 
-	w.WriteHeader(http.StatusAccepted)
-	w.Write(JSONWrite)
 }
 
 // func (route *Routes) GetProductCategoryEndPoint(w http.ResponseWriter, r *http.Request){

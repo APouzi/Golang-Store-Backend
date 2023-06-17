@@ -24,7 +24,7 @@ func InitPrepare(db *sql.DB) *PrepareStatmentsProducts{
 		log.Fatal(err)
 	}
 
-	prep.GetOneProductStmt, err = db.Prepare("SELECT Product_ID, Product_Name, Product_Description, PRIMARY_IMAGE FROM tblProducts where Product_ID = ?")
+	prep.GetOneProductStmt, err = db.Prepare("SELECT Product_ID, Product_Name, Product_Description, PRIMARY_IMAGE, Date_Created, Modified_Date FROM tblProducts WHERE Product_ID = ?")
 	if err != nil{
 		log.Fatal(err)
 	}
@@ -86,26 +86,36 @@ func(prep *PrepareStatmentsProducts) GetAllProducts(db *sql.DB) []ProductJSON {
 	return products
 }
 
-func(prep *PrepareStatmentsProducts) GetOneProduct(db *sql.DB, id int) ProductJSON {
+type ProductJSON struct {
+	Product_ID          int     `json:"Product_ID"`
+	Product_Name        string  `json:"Product_Name"`
+	Product_Description string  `json:"Product_Description"`
+	PRIMARY_IMAGE       string  `json:"PRIMARY_IMAGE,omitempty"`
+	ProductDateAdded   string  `json:"DateAdded"`
+	ModifiedDate       string `json:"ModifiedDate"`
+}
+
+func(prep *PrepareStatmentsProducts) GetOneProduct(db *sql.DB, id int) (ProductJSON, error) {
 	rows :=prep.GetOneProductStmt.QueryRow(id)
-	
 	prodJSON := ProductJSON{}
 	
 	err := rows.Scan(
 		&prodJSON.Product_ID, 
 		&prodJSON.Product_Name, 
-		&prodJSON.Product_Description, 
-		&prodJSON.Product_Price, 
-		&prodJSON.SKU, 
-		&prodJSON.UPC, 
+		&prodJSON.Product_Description,  
 		&prodJSON.PRIMARY_IMAGE,
+		&prodJSON.ProductDateAdded,
+		&prodJSON.ModifiedDate,
 	)
+	if err == sql.ErrNoRows{
+		return prodJSON, err
+	}
 	if err != nil{
 		fmt.Println("scanning error:",err)
 	}
 	
 
-	return prodJSON
+	return prodJSON, nil
 }
 
 func(prep *PrepareStatmentsProducts) GetCategoryProduct(db *sql.DB, category int, catMap map[string]int) []ProductJSON{

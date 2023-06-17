@@ -52,18 +52,6 @@ type Product struct {
 	ModifiedDate        string
 }
 
-type ProductJSON struct {
-	Product_ID          int     `json:"Product_ID"`
-	Product_Name        string  `json:"Product_Name"`
-	Product_Description string  `json:"Product_Description"`
-	Product_Price       float32 `json:"Product_Price"`
-	SKU                 string  `json:"SKU"`
-	UPC                 string  `json:"UPC"`
-	PRIMARY_IMAGE       string  `json:"PRIMARY_IMAGE,omitempty"`
-	// ProductDateAdded   string  `json:"DateAdded"`
-	// ModifiedDate       string `json:"ModifiedDate"`
-}
-
 type Category struct {
 	Name string
 }
