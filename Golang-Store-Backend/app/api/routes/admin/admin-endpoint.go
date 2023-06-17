@@ -470,34 +470,76 @@ func (route *AdminRoutes) EditProduct(w http.ResponseWriter, r *http.Request){
 	
 }
 
+type VariationEdit struct{
+	VariationID int64 `json:"Variation_ID"`
+	VariationProductID int64 `json:"Product_ID"`
+	VariationName string `json:"Variation_Name"`
+	VariationDescription string `json:"Variation_Description"`
+	VariationPrice float32 `json:"Variation_Price"`
+	SKU string `json:"SKU"`
+	UPC string `json:"UPC"`
+	PrimaryImage string `json:"Primary_Image,omitempty"`
+	VariationQuantity int  `json:"Variation_Quantity"`
+	LocationAt string `json:"Location_At"`
+}
+
 func (route *AdminRoutes) EditVariation(w http.ResponseWriter, r *http.Request){
-	prodEdit := ProductCreate{}
-	helpers.ReadJSON(w,r, &prodEdit)
+	VaritEdit := VariationEdit{}
+	helpers.ReadJSON(w,r, &VaritEdit)
 	var buf strings.Builder
-	if prodEdit.VariationName != ""{
-		buf.WriteString("Product_Name = ")
-		buf.WriteString(prodEdit.VariationName)
-		buf.WriteByte(',')
+	Varib := []any{}
+	buf.WriteString("UPDATE tblProductVariation SET")
+	var count int = 0
+	if VaritEdit.VariationName != "" {
+		if count == 0{
+			buf.WriteString(" Variation_Name = ?")
+			Varib = append(Varib, VaritEdit.VariationName)
+			count++
+		}
+		buf.WriteString(", Variation_Name = ?")
+		Varib = append(Varib, VaritEdit.VariationName)
 	}
-	if prodEdit.VariationDescription != ""{
-		buf.WriteString(", Product_Name = ")
-		buf.WriteString(prodEdit.VariationDescription)
-		buf.WriteByte(',')
+	if VaritEdit.VariationDescription != ""{
+		if count == 0{
+			buf.WriteString(" Variation_Description = ?")
+			Varib = append(Varib, VaritEdit.VariationDescription)
+			count++
+		}
+		buf.WriteString(", Variation_Description = ?")
+		Varib = append(Varib, VaritEdit.VariationDescription)
 	}
-	if prodEdit.VariationPrice != 0 {
-		buf.WriteString("Product_Name = ")
-		iTs := strconv.FormatFloat(prodEdit.Price,'f',2,64 )
-		buf.WriteString(iTs)
-		buf.WriteByte(',')
+	if VaritEdit.SKU != ""{
+		if count == 0 {
+			buf.WriteString(" SKU = ?")
+			Varib = append(Varib, VaritEdit.SKU)
+			count++
+		}
+		buf.WriteString(", SKU = ?")
+		Varib = append(Varib, VaritEdit.SKU)
 	}
-	if prodEdit.VariationQuantity != 0 {
-		buf.WriteString("Product_Name = ")
-		buf.WriteString(prodEdit.Name)
-		buf.WriteByte(' ')
+	if VaritEdit.UPC != ""{
+		if count == 0{
+			buf.WriteString(" UPC = ?")
+			Varib = append(Varib, VaritEdit.UPC)
+			count++
+		}
+		buf.WriteString(", UPC = ?")
+		Varib = append(Varib, VaritEdit.UPC)
 	}
-	if prodEdit.LocationAt != ""{
-		buf.WriteString("Product_Name = ")
-		buf.WriteString(prodEdit.Name)
-		buf.WriteByte(' ')
+	if VaritEdit.VariationPrice != 0 {
+		if count == 0{
+			buf.WriteString(" Variation_Price = ?")
+			Varib = append(Varib, VaritEdit.VariationPrice)
+			count++
+		}
+		buf.WriteString(", Variation_Price = ?")
+		Varib = append(Varib, VaritEdit.VariationPrice)
 	}
+	buf.WriteString(" WHERE Variation_ID = ?")
+	Varib = append(Varib, VaritEdit.VariationID)
+	_,err := route.DB.Exec(buf.String(),Varib...)
+	if err != nil{
+		fmt.Println(err)
+	}
+	helpers.WriteJSON(w, http.StatusAccepted, VaritEdit)
 }
