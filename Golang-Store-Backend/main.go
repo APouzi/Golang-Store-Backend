@@ -175,7 +175,7 @@ func PopulateProductTables(db *sql.DB) {
 	}
 
 	for i := 0.00; i <= 10; i++{
-		_,err = db.Exec("INSERT INTO tblProducts (Product_Name, Product_Description, Product_Price, SKU, UPC) VALUES(?,?,?,?,?)", "testProductPopulate","This is a description!",10.85+i,"SKUABC123","21124214311A")
+		_,err = db.Exec("INSERT INTO tblProducts (Product_Name, Product_Description) VALUES(?,?)", "testProductPopulate","This is a description!")
 		if err != nil{
 			log.Fatal("Error with tblProducts")
 		}
@@ -194,11 +194,11 @@ func PopulateProductTables(db *sql.DB) {
 	// }
 
 	resultProd := database.Product{}
-	row := db.QueryRow("select Product_ID, Product_Name, Product_Description, Product_Price from tblProducts where Product_ID = ?",4)
+	row := db.QueryRow("select Product_ID, Product_Name, Product_Description from tblProducts where Product_ID = ?",4)
 	if row == nil{
 		fmt.Println("Nothing returned!")
 	}
-	err = row.Scan(&resultProd.Product_ID,&resultProd.Product_Name,&resultProd.Product_Description, &resultProd.Product_Price)
+	err = row.Scan(&resultProd.Product_ID,&resultProd.Product_Name,&resultProd.Product_Description)
 	if err != nil {
 		fmt.Println(err)
 	}
