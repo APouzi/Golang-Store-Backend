@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Apouzi/golang-shop/app/api/helpers"
+	"github.com/go-chi/chi"
 )
 
 type AdminRoutes struct{
@@ -447,6 +448,7 @@ type ProductEdit struct{
 
 
 func (route *AdminRoutes) EditProduct(w http.ResponseWriter, r *http.Request){
+	ProdID := chi.URLParam(r, "ProductID")
 	prodEdit := ProductEdit{}
 	helpers.ReadJSON(w,r, &prodEdit)
 	var buf strings.Builder
@@ -486,7 +488,7 @@ func (route *AdminRoutes) EditProduct(w http.ResponseWriter, r *http.Request){
 	}
 
 	buf.WriteString(", Modified_Date = ? WHERE Product_ID = ?")
-	Varib = append(Varib, time.Now(),prodEdit.Product_ID)
+	Varib = append(Varib, time.Now(),ProdID)
 	_, err := route.DB.Exec(buf.String(), Varib...)
 	if err != nil{
 		fmt.Println("err with exec Edit Product Update")
@@ -511,6 +513,7 @@ type VariationEdit struct{
 }
 
 func (route *AdminRoutes) EditVariation(w http.ResponseWriter, r *http.Request){
+	VarID := chi.URLParam(r, "VariationID")
 	VaritEdit := VariationEdit{}
 	helpers.ReadJSON(w,r, &VaritEdit)
 	var buf strings.Builder
@@ -563,7 +566,7 @@ func (route *AdminRoutes) EditVariation(w http.ResponseWriter, r *http.Request){
 		Varib = append(Varib, VaritEdit.VariationPrice)
 	}
 	buf.WriteString(" WHERE Variation_ID = ?")
-	Varib = append(Varib, VaritEdit.VariationID)
+	Varib = append(Varib, VarID)
 	_,err := route.DB.Exec(buf.String(),Varib...)
 	if err != nil{
 		fmt.Println(err)
