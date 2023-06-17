@@ -232,6 +232,12 @@ type ProductCreate struct{
 	VariationQuantity int  `json:"Variation_Quantity"`
 	LocationAt string `json:"Location_At"`
 }
+type ProductCreateRetrieve struct{
+	ProductID int64 `json:"Product_ID"`
+	VarID int64 `json:"Variation_ID"`
+	ProdInvLoc int64 `json:"Inv_ID,omitempty"`
+
+}
 
 // Needs to get SKU, UPC, Primary Image to get created. PRimary Image needs to be a google/AWS bucket
 func(route *AdminRoutes) CreateProduct(w http.ResponseWriter, r *http.Request){
@@ -260,28 +266,41 @@ func(route *AdminRoutes) CreateProduct(w http.ResponseWriter, r *http.Request){
 		fmt.Println("transaction at tblProductVariation has failed")
 		fmt.Println(err)
 	}
+	
 	ProdVarID, err :=  tRes.LastInsertId()
 	if err != nil {
 		fmt.Println("retrieval of LastInsertID of tblProductVariation has failed")
 		fmt.Println(err)
 	}
-	tRes, err = transaction.Exec("INSERT INTO tblProductInventory(Variation_ID, Quantity) VALUES(?,?)",  ProdVarID,productRetrieve.VariationQuantity)
-	if err != nil {
-		fmt.Println("transaction at tblProductInventory has failed")
-		fmt.Println(err)
+	PCR := ProductCreateRetrieve{
+		ProductID: prodID,
+		VarID: ProdVarID,
 	}
-	ProdInvID, err := tRes.LastInsertId()
-	if err != nil {
-		fmt.Println("retrieval of LastInsertID of tblProductInventory has failed")
-		fmt.Println(err)
+	if productRetrieve.LocationAt == ""{
+		
+		err = transaction.Commit()
+		if err != nil{
+			fmt.Println(err)
+		}
+		helpers.WriteJSON(w,http.StatusAccepted,&PCR)
+		return
 	}
 
-	_, err = transaction.Exec("INSERT INTO tblLocation(Inv_ID,Location_AT) VALUES(?,?)", ProdInvID,productRetrieve.LocationAt)
+	tRes, err = transaction.Exec("INSERT INTO tblProductInventoryLocation(Variation_ID, Quantity, Location_AT) VALUES(?,?,?)",  ProdVarID,productRetrieve.VariationQuantity, productRetrieve.LocationAt)
 	if err != nil {
 		fmt.Println("transaction at tblProductInventory has failed")
 		fmt.Println(err)
-	}	
-	transaction.Commit()
+	}
+	invID, err := tRes.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
+	PCR.ProdInvLoc = invID
+	err = transaction.Commit()
+	if err != nil{
+		fmt.Println(err)
+	}
+	helpers.WriteJSON(w,http.StatusAccepted,&PCR)
 }
 
 
