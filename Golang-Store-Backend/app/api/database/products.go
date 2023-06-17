@@ -19,12 +19,12 @@ type PrepareStatmentsProducts struct{
 func InitPrepare(db *sql.DB) *PrepareStatmentsProducts{
 	prep := &PrepareStatmentsProducts{}
 	var err error
-	prep.GetAllProdStmt, err = db.Prepare("SELECT Product_ID, Product_Name, Product_Description, Product_Price, SKU, UPC, PRIMARY_IMAGE FROM tblProducts")
+	prep.GetAllProdStmt, err = db.Prepare("SELECT Product_ID, Product_Name, Product_Description, PRIMARY_IMAGE FROM tblProducts")
 	if err != nil{
 		log.Fatal(err)
 	}
 
-	prep.GetOneProductStmt, err = db.Prepare("SELECT Product_ID, Product_Name, Product_Description, Product_Price, SKU, UPC, PRIMARY_IMAGE FROM tblProducts where Product_ID = ?")
+	prep.GetOneProductStmt, err = db.Prepare("SELECT Product_ID, Product_Name, Product_Description, PRIMARY_IMAGE FROM tblProducts where Product_ID = ?")
 	if err != nil{
 		log.Fatal(err)
 	}
@@ -74,10 +74,7 @@ func(prep *PrepareStatmentsProducts) GetAllProducts(db *sql.DB) []ProductJSON {
 		err := rows.Scan(
 			&prodJSON.Product_ID, 
 			&prodJSON.Product_Name, 
-			&prodJSON.Product_Description, 
-			&prodJSON.Product_Price, 
-			&prodJSON.SKU, 
-			&prodJSON.UPC, 
+			&prodJSON.Product_Description,  
 			&prodJSON.PRIMARY_IMAGE,
 		)
 		if err != nil{
@@ -123,9 +120,6 @@ func(prep *PrepareStatmentsProducts) GetCategoryProduct(db *sql.DB, category int
 			&prodJSON.Product_ID, 
 			&prodJSON.Product_Name, 
 			&prodJSON.Product_Description, 
-			&prodJSON.Product_Price, 
-			&prodJSON.SKU, 
-			&prodJSON.UPC, 
 			// &prodJSON.PRIMARY_IMAGE,
 		)
 		if err != nil{
@@ -149,9 +143,6 @@ func(prep *PrepareStatmentsProducts) GetProductCategoryFinal(db *sql.DB, categor
 			&prodJSON.Product_ID, 
 			&prodJSON.Product_Name, 
 			&prodJSON.Product_Description, 
-			&prodJSON.Product_Price, 
-			// &prodJSON.SKU, 
-			// &prodJSON.UPC, 
 			// &prodJSON.PRIMARY_IMAGE,
 		)
 		if err != nil{
