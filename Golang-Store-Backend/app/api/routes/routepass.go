@@ -33,7 +33,7 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 	digest.Get("/", rIndex.Index)
 	digest.Post("/superusercreation",rUser.AdminSuperUserCreation)
 	
-	digest.Get("/product/{Product_ID}",rProduct.GetOneProductsEndPoint)
+	digest.Get("/products/{Product_ID}",rProduct.GetOneProductsEndPoint)
 	digest.Get("/products/",rProduct.GetAllProductsEndPoint)
 	// digest.Get("/products/{CategoryName}",r.GetProductCategoryEndPointFinal)
 	digest.Post("/users/",rUser.Register)
