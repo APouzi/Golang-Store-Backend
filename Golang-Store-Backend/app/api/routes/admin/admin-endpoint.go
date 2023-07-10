@@ -27,200 +27,7 @@ type CategoryInsert struct{
 	CategoryName string `json:"CategoryName"`
 	CategoryDescription string `json:"CategoryDescription"`
 }
-func (route *AdminRoutes) CreatePrimeCategory(w http.ResponseWriter, r *http.Request){
-	category_read := CategoryInsert{}
-	err := helpers.ReadJSON(w, r, &category_read)
-	if err != nil{
-		fmt.Println(err)
-	}
-	result, err := route.DB.Exec("INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)", category_read.CategoryName, category_read.CategoryDescription )
-	if err != nil{
-		fmt.Println(err)
-	}
-	resultID, err := result.LastInsertId()
-	if err != nil{
-		fmt.Println(err)
-	}
-	
-	helpers.WriteJSON(w, http.StatusAccepted, resultID)
-}
 
-func (route *AdminRoutes) CreateSubCategory(w http.ResponseWriter, r *http.Request){
-	category_read := CategoryInsert{}
-	err := helpers.ReadJSON(w, r, &category_read)
-	if err != nil{
-		fmt.Println(err)
-	}
-	result, err := route.DB.Exec("INSERT INTO tblCategoriesSub(CategoryName, CategoryDescription) VALUES(?,?)", category_read.CategoryName, category_read.CategoryDescription )
-	if err != nil{
-		fmt.Println(err)
-	}
-	resultID, err := result.LastInsertId()
-	if err != nil{
-		fmt.Println(err)
-	}
-	
-	helpers.WriteJSON(w, http.StatusAccepted, resultID)
-}
-
-func (route *AdminRoutes) CreateFinalCategory(w http.ResponseWriter, r *http.Request){
-	category_read := CategoryInsert{}
-	err := helpers.ReadJSON(w, r, &category_read)
-	if err != nil{
-		fmt.Println(err)
-	}
-	result, err := route.DB.Exec("INSERT INTO tblCategoriesFinal(CategoryName, CategoryDescription) VALUES(?,?)", category_read.CategoryName, category_read.CategoryDescription )
-	if err != nil{
-		fmt.Println(err)
-	}
-	resultID, err := result.LastInsertId()
-	if err != nil{
-		fmt.Println(err)
-	}
-	
-	helpers.WriteJSON(w, http.StatusAccepted, resultID)
-}
-
-type CatToCat struct {
-	CatStart int `json:"CategoryStart"`
-	CatEnd int `json:"CategoryEnd"`
-}
-
-
-func (route *AdminRoutes) ConnectPrimeToSubCategory(w http.ResponseWriter, r *http.Request){
-	// Frontend will have the names and ids, so I PROBABLY wont need to do a search regarding the names of category to get ids
-	FinalSub := CatToCat{}
-	err := helpers.ReadJSON(w,r, &FinalSub)
-	if err != nil{
-		fmt.Println(err)
-	}
-	result, err := route.DB.Exec("INSERT INTO tblCatPrimeSub(CatPrimeID,  CatSubID) VALUES(?,?)", FinalSub.CatStart, FinalSub.CatEnd)
-	if err != nil{
-		fmt.Println(err)
-	}
-	resultID, err := result.LastInsertId()
-	if err != nil{
-		fmt.Println(err)
-	}
-	
-	helpers.WriteJSON(w, http.StatusAccepted, resultID)
-}
-
-func (route *AdminRoutes) ConnectSubToFinalCategory(w http.ResponseWriter, r *http.Request){
-	// Frontend will have the names and ids, so I PROBABLY wont need to do a search regarding the names of category to get ids
-	FinalSub := CatToCat{}
-	err := helpers.ReadJSON(w,r, &FinalSub)
-	if err != nil{
-		fmt.Println(err)
-	}
-	result, err := route.DB.Exec("INSERT INTO tblCatSubFinal(CatSubID, CatFinalID) VALUES(?,?)", FinalSub.CatStart, FinalSub.CatEnd)
-	if err != nil{
-		fmt.Println(err)
-	}
-
-	resultID, err := result.LastInsertId()
-	if err != nil{
-		fmt.Println(err)
-	}
-	helpers.WriteJSON(w, http.StatusAccepted, resultID)
-}
-
-type CatToProd struct {
-	Cat int `json:"Category"`
-	Prod int `json:"Product"`
-}
-func (route *AdminRoutes) ConnectFinalToProdCategory(w http.ResponseWriter, r *http.Request){
-	// Frontend will have the names and ids, so I PROBABLY wont need to do a search regarding the names of category to get ids
-	FinalProd := CatToProd{}
-	err := helpers.ReadJSON(w,r, &FinalProd)
-	if err != nil{
-		fmt.Println(err)
-	}
-	result, err := route.DB.Exec("INSERT INTO tblCatFinalProd(CatFinalID, Product_ID) VALUES(?,?)", FinalProd.Cat, FinalProd.Prod)
-
-	if err != nil{
-		fmt.Println(err)
-	}
-
-	resultID, err := result.LastInsertId()
-	if err != nil{
-		fmt.Println(err)
-	}
-	helpers.WriteJSON(w, http.StatusAccepted, resultID)
-}
-
-
-type ReadCat struct{
-	Category int `json:"category"`
-}
-func (route *AdminRoutes) InsertIntoFinalProd(w http.ResponseWriter, r *http.Request){
-	ReadCatR := ReadCat{}
-	err := helpers.ReadJSON(w,r,&ReadCatR)
-	if err != nil{
-		fmt.Println(err)
-	}
-	fmt.Println("InsertIntoCategory ReadCatR",ReadCatR)
-	FinalProd := "INSERT INTO tblCatFinalProd(CatFinalID, Product_ID) VALUES(?,?)"
-	route.DB.Exec(FinalProd, 1,ReadCatR.Category)
-}
-
-type CategoryReturn struct{
-	CategoryName string `json:"CategoryName"`
-	CategoryDescription string `json:"CategoryDescription"`
-}
-
-type CategoriesList struct{
-	collection []CategoryReturn
-}
-
-func (route *AdminRoutes) ReturnAllPrimeCategories(w http.ResponseWriter, r *http.Request){
-	query := "SELECT CategoryName, CategoryDescription FROM tblCategoriesPrime"
-	rows,err := route.DB.Query(query)
-	if err != nil{
-		fmt.Println(err)
-	}
-	category := CategoryReturn{}
-	categoryList := CategoriesList{}
-	categoryList.collection = []CategoryReturn{}
-	for rows.Next(){
-		rows.Scan(&category.CategoryName, &category.CategoryDescription)
-		categoryList.collection = append(categoryList.collection, category)
-	}
-	helpers.WriteJSON(w,http.StatusAccepted, categoryList.collection)
-
-}
-
-func (route *AdminRoutes) ReturnAllSubCategories(w http.ResponseWriter, r *http.Request){
-	query := "SELECT CategoryName, CategoryDescription FROM tblCategoriesSub"
-	rows,err := route.DB.Query(query)
-	if err != nil{
-		fmt.Println(err)
-	}
-	category := CategoryReturn{}
-	categoryList := CategoriesList{}
-	categoryList.collection = []CategoryReturn{}
-	for rows.Next(){
-		rows.Scan(&category.CategoryName, &category.CategoryDescription)
-		categoryList.collection = append(categoryList.collection, category)
-	}
-	helpers.WriteJSON(w,http.StatusAccepted, categoryList.collection)
-}
-
-func (route *AdminRoutes) ReturnAllFinalCategories(w http.ResponseWriter, r *http.Request){
-	query := "SELECT CategoryName, CategoryDescription FROM tblCategoriesFinal"
-	rows,err := route.DB.Query(query)
-	if err != nil{
-		fmt.Println(err)
-	}
-	category := CategoryReturn{}
-	categoryList := CategoriesList{}
-	categoryList.collection = []CategoryReturn{}
-	for rows.Next(){
-		rows.Scan(&category.CategoryName, &category.CategoryDescription)
-		categoryList.collection = append(categoryList.collection, category)
-	}
-	helpers.WriteJSON(w,http.StatusAccepted, categoryList.collection)
-}
 
 // Product automatically creates Variation
 type ProductCreate struct{
@@ -444,6 +251,204 @@ type ProductEdit struct{
 	Description string `json:"Product_Description"`
 	Price float64 `json:"Product_Price"`
 }
+
+
+func (route *AdminRoutes) CreatePrimeCategory(w http.ResponseWriter, r *http.Request){
+	category_read := CategoryInsert{}
+	err := helpers.ReadJSON(w, r, &category_read)
+	if err != nil{
+		fmt.Println(err)
+	}
+	result, err := route.DB.Exec("INSERT INTO tblCategoriesPrime(CategoryName, CategoryDescription) VALUES(?,?)", category_read.CategoryName, category_read.CategoryDescription )
+	if err != nil{
+		fmt.Println(err)
+	}
+	resultID, err := result.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
+	
+	helpers.WriteJSON(w, http.StatusAccepted, resultID)
+}
+
+func (route *AdminRoutes) CreateSubCategory(w http.ResponseWriter, r *http.Request){
+	category_read := CategoryInsert{}
+	err := helpers.ReadJSON(w, r, &category_read)
+	if err != nil{
+		fmt.Println(err)
+	}
+	result, err := route.DB.Exec("INSERT INTO tblCategoriesSub(CategoryName, CategoryDescription) VALUES(?,?)", category_read.CategoryName, category_read.CategoryDescription )
+	if err != nil{
+		fmt.Println(err)
+	}
+	resultID, err := result.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
+	
+	helpers.WriteJSON(w, http.StatusAccepted, resultID)
+}
+
+func (route *AdminRoutes) CreateFinalCategory(w http.ResponseWriter, r *http.Request){
+	category_read := CategoryInsert{}
+	err := helpers.ReadJSON(w, r, &category_read)
+	if err != nil{
+		fmt.Println(err)
+	}
+	result, err := route.DB.Exec("INSERT INTO tblCategoriesFinal(CategoryName, CategoryDescription) VALUES(?,?)", category_read.CategoryName, category_read.CategoryDescription )
+	if err != nil{
+		fmt.Println(err)
+	}
+	resultID, err := result.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
+	
+	helpers.WriteJSON(w, http.StatusAccepted, resultID)
+}
+
+type CatToCat struct {
+	CatStart int `json:"CategoryStart"`
+	CatEnd int `json:"CategoryEnd"`
+}
+
+
+func (route *AdminRoutes) ConnectPrimeToSubCategory(w http.ResponseWriter, r *http.Request){
+	// Frontend will have the names and ids, so I PROBABLY wont need to do a search regarding the names of category to get ids
+	FinalSub := CatToCat{}
+	err := helpers.ReadJSON(w,r, &FinalSub)
+	if err != nil{
+		fmt.Println(err)
+	}
+	result, err := route.DB.Exec("INSERT INTO tblCatPrimeSub(CatPrimeID,  CatSubID) VALUES(?,?)", FinalSub.CatStart, FinalSub.CatEnd)
+	if err != nil{
+		fmt.Println(err)
+	}
+	resultID, err := result.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
+	
+	helpers.WriteJSON(w, http.StatusAccepted, resultID)
+}
+
+func (route *AdminRoutes) ConnectSubToFinalCategory(w http.ResponseWriter, r *http.Request){
+	// Frontend will have the names and ids, so I PROBABLY wont need to do a search regarding the names of category to get ids
+	FinalSub := CatToCat{}
+	err := helpers.ReadJSON(w,r, &FinalSub)
+	if err != nil{
+		fmt.Println(err)
+	}
+	result, err := route.DB.Exec("INSERT INTO tblCatSubFinal(CatSubID, CatFinalID) VALUES(?,?)", FinalSub.CatStart, FinalSub.CatEnd)
+	if err != nil{
+		fmt.Println(err)
+	}
+
+	resultID, err := result.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
+	helpers.WriteJSON(w, http.StatusAccepted, resultID)
+}
+
+type CatToProd struct {
+	Cat int `json:"Category"`
+	Prod int `json:"Product"`
+}
+func (route *AdminRoutes) ConnectFinalToProdCategory(w http.ResponseWriter, r *http.Request){
+	// Frontend will have the names and ids, so I PROBABLY wont need to do a search regarding the names of category to get ids
+	FinalProd := CatToProd{}
+	err := helpers.ReadJSON(w,r, &FinalProd)
+	if err != nil{
+		fmt.Println(err)
+	}
+	result, err := route.DB.Exec("INSERT INTO tblCatFinalProd(CatFinalID, Product_ID) VALUES(?,?)", FinalProd.Cat, FinalProd.Prod)
+
+	if err != nil{
+		fmt.Println(err)
+	}
+
+	resultID, err := result.LastInsertId()
+	if err != nil{
+		fmt.Println(err)
+	}
+	helpers.WriteJSON(w, http.StatusAccepted, resultID)
+}
+
+
+type ReadCat struct{
+	Category int `json:"category"`
+}
+func (route *AdminRoutes) InsertIntoFinalProd(w http.ResponseWriter, r *http.Request){
+	ReadCatR := ReadCat{}
+	err := helpers.ReadJSON(w,r,&ReadCatR)
+	if err != nil{
+		fmt.Println(err)
+	}
+	fmt.Println("InsertIntoCategory ReadCatR",ReadCatR)
+	FinalProd := "INSERT INTO tblCatFinalProd(CatFinalID, Product_ID) VALUES(?,?)"
+	route.DB.Exec(FinalProd, 1,ReadCatR.Category)
+}
+
+type CategoryReturn struct{
+	CategoryName string `json:"CategoryName"`
+	CategoryDescription string `json:"CategoryDescription"`
+}
+
+type CategoriesList struct{
+	collection []CategoryReturn
+}
+
+func (route *AdminRoutes) ReturnAllPrimeCategories(w http.ResponseWriter, r *http.Request){
+	query := "SELECT CategoryName, CategoryDescription FROM tblCategoriesPrime"
+	rows,err := route.DB.Query(query)
+	if err != nil{
+		fmt.Println(err)
+	}
+	category := CategoryReturn{}
+	categoryList := CategoriesList{}
+	categoryList.collection = []CategoryReturn{}
+	for rows.Next(){
+		rows.Scan(&category.CategoryName, &category.CategoryDescription)
+		categoryList.collection = append(categoryList.collection, category)
+	}
+	helpers.WriteJSON(w,http.StatusAccepted, categoryList.collection)
+
+}
+
+func (route *AdminRoutes) ReturnAllSubCategories(w http.ResponseWriter, r *http.Request){
+	query := "SELECT CategoryName, CategoryDescription FROM tblCategoriesSub"
+	rows,err := route.DB.Query(query)
+	if err != nil{
+		fmt.Println(err)
+	}
+	category := CategoryReturn{}
+	categoryList := CategoriesList{}
+	categoryList.collection = []CategoryReturn{}
+	for rows.Next(){
+		rows.Scan(&category.CategoryName, &category.CategoryDescription)
+		categoryList.collection = append(categoryList.collection, category)
+	}
+	helpers.WriteJSON(w,http.StatusAccepted, categoryList.collection)
+}
+
+func (route *AdminRoutes) ReturnAllFinalCategories(w http.ResponseWriter, r *http.Request){
+	query := "SELECT CategoryName, CategoryDescription FROM tblCategoriesFinal"
+	rows,err := route.DB.Query(query)
+	if err != nil{
+		fmt.Println(err)
+	}
+	category := CategoryReturn{}
+	categoryList := CategoriesList{}
+	categoryList.collection = []CategoryReturn{}
+	for rows.Next(){
+		rows.Scan(&category.CategoryName, &category.CategoryDescription)
+		categoryList.collection = append(categoryList.collection, category)
+	}
+	helpers.WriteJSON(w,http.StatusAccepted, categoryList.collection)
+}
+
+
 
 
 
