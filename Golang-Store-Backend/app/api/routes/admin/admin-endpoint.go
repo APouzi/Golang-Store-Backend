@@ -326,11 +326,11 @@ type variCrtd struct{
 }
 
 func (route *AdminRoutes) CreateVariation(w http.ResponseWriter, r *http.Request){
-
+	ProductID := chi.URLParam(r, "ProductID")
 	variation := VariationCreate{}
 	helpers.ReadJSON(w,r, &variation)
 // Check if product exists, if not, then return false
-	row := route.DB.QueryRow("SELECT Product_ID FROM tblProducts WHERE Product_ID = ?",variation.ProductID)
+	row := route.DB.QueryRow("SELECT Product_ID FROM tblProducts WHERE Product_ID = ?",ProductID)
 	if row.Err() != nil{
 		fmt.Println(row.Err().Error())
 		return
@@ -353,7 +353,7 @@ func (route *AdminRoutes) CreateVariation(w http.ResponseWriter, r *http.Request
 	var err error
 	if variation.PrimaryImage != "" {
 		varitCrt := variCrtd{}
-		varit, err = route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price) VALUES(?,?,?,?)", variation.ProductID,variation.Name, variation.Description, variation.Price)
+		varit, err = route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price) VALUES(?,?,?,?)", ProductID,variation.Name, variation.Description, variation.Price)
 		if err != nil{
 			fmt.Println("insert into tblProductVariation failed")
 			fmt.Println(err)
@@ -364,7 +364,7 @@ func (route *AdminRoutes) CreateVariation(w http.ResponseWriter, r *http.Request
 		}
 		// helpers.WriteJSON(w, http.StatusCreated,varitCrt)
 	}
-	varit, err = route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price, PRIMARY_IMAGE) VALUES(?,?,?,?,?)", variation.ProductID,variation.Name, variation.Description, variation.Price, variation.PrimaryImage)
+	varit, err = route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price, PRIMARY_IMAGE) VALUES(?,?,?,?,?)", ProductID,variation.Name, variation.Description, variation.Price, variation.PrimaryImage)
 	if err != nil{
 		fmt.Println("insert into tblProductVariation failed")
 		fmt.Println(err)
