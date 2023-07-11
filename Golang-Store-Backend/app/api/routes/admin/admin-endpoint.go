@@ -566,3 +566,18 @@ func (route *AdminRoutes) EditVariation(w http.ResponseWriter, r *http.Request){
 	}
 	helpers.WriteJSON(w, http.StatusAccepted, VaritEdit)
 }
+
+func (route *AdminRoutes) GetAllTables(w http.ResponseWriter, r *http.Request){
+	sql,err := route.DB.Query("show tables")
+	if err != nil{
+		fmt.Println("failed to get all tables")
+		return
+	}
+	var table string
+	list := []string{}
+	for sql.Next(){
+		sql.Scan(&table)
+		list = append(list, table)
+	}
+	helpers.WriteJSON(w,200,list)
+}

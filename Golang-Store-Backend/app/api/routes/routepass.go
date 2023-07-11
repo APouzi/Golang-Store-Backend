@@ -33,7 +33,7 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 	digest.Get("/", rIndex.Index)
 	digest.Post("/superusercreation",rUser.AdminSuperUserCreation)
 	
-	digest.Get("/products/{Product_ID}",rProduct.GetOneProductsEndPoint)
+	digest.Get("/products/{ProductID}",rProduct.GetOneProductsEndPoint)
 	digest.Get("/products/",rProduct.GetAllProductsEndPoint)
 	// digest.Get("/products/{CategoryName}",r.GetProductCategoryEndPointFinal)
 	digest.Post("/users/",rUser.Register)
@@ -60,6 +60,8 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 	digest.Get("/category/subs", rAdmin.ReturnAllSubCategories)
 	digest.Get("/category/finals", rAdmin.ReturnAllFinalCategories)
 	digest.Patch("/products/{ProductID}",rAdmin.EditProduct)
-	digest.Patch("/products/variation/{VariationID}",rAdmin.EditVariation)
+	digest.Patch("/products/{ProductID}/variation/{VariationID}",rAdmin.EditVariation)
+
+	digest.Get("/tables",rAdmin.GetAllTables)
 	return digest
 }
