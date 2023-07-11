@@ -245,12 +245,6 @@ func(route *AdminRoutes) CreateInventoryLocation(w http.ResponseWriter, r *http.
 	helpers.WriteJSON(w, http.StatusAccepted, pil)
 }
 
-type ProductEdit struct{
-	Product_ID int64 `json:"Product_ID"`
-	Name string `json:"Product_Name"`
-	Description string `json:"Product_Description"`
-	Price float64 `json:"Product_Price"`
-}
 
 
 func (route *AdminRoutes) CreatePrimeCategory(w http.ResponseWriter, r *http.Request){
@@ -449,7 +443,10 @@ func (route *AdminRoutes) ReturnAllFinalCategories(w http.ResponseWriter, r *htt
 }
 
 
-
+type ProductEdit struct{
+	Name string `json:"Product_Name"`
+	Description string `json:"Product_Description"`
+}
 
 
 func (route *AdminRoutes) EditProduct(w http.ResponseWriter, r *http.Request){
@@ -477,15 +474,6 @@ func (route *AdminRoutes) EditProduct(w http.ResponseWriter, r *http.Request){
 		}
 		buf.WriteString(", Product_Description = ?")
 		Varib = append(Varib, prodEdit.Description)
-	}
-	if prodEdit.Price != 0 {
-		if count == 0{
-			buf.WriteString(" Product_Price = ?")
-			Varib = append(Varib, prodEdit.Price)
-			count++
-		}
-		buf.WriteString(", Product_Price = ?")
-		Varib = append(Varib, prodEdit.Price)
 	}
 	if count  == 0 {
 		helpers.WriteJSON(w,http.StatusAccepted,"failed")
