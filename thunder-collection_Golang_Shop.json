@@ -1,0 +1,447 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "Golang Shop",
+    "dateExported": "2023-07-11T10:17:57.534Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "c850ad12-3f70-4166-9603-734b6926c1b2",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Get All Primes",
+            "url": "http://localhost:8000/category/primes",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2023-06-01T02:00:31.787Z",
+            "modified": "2023-06-01T02:00:31.787Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "b102745c-9429-4e00-b26a-9fc038076574",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Get All Subs",
+            "url": "http://localhost:8000/category/subs",
+            "method": "GET",
+            "sortNum": 15000,
+            "created": "2023-06-01T02:09:27.480Z",
+            "modified": "2023-06-01T02:09:36.176Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "045ee5fa-e975-4ef1-b7eb-78cdbb46b52c",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Get All Finals",
+            "url": "http://localhost:8000/category/finals",
+            "method": "GET",
+            "sortNum": 17500,
+            "created": "2023-06-01T02:11:06.338Z",
+            "modified": "2023-06-01T02:11:21.553Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "2935ef97-8c18-4a47-9b39-60aa281e4b68",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Get All Products",
+            "url": "http://localhost:8000/products/",
+            "method": "GET",
+            "sortNum": 18750,
+            "created": "2023-06-01T02:50:08.354Z",
+            "modified": "2023-07-10T05:41:58.808Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "80718fd4-98d3-4b06-9bf9-a66818d37f4d",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Get One Product",
+            "url": "http://localhost:8000/products/1/",
+            "method": "GET",
+            "sortNum": 19062.5,
+            "created": "2023-07-10T05:41:25.794Z",
+            "modified": "2023-07-10T05:41:25.794Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "2a3746dd-258d-4663-b2f8-3ef2be552de0",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Get Profile (JWT)",
+            "url": "http://localhost:8000/users/profile",
+            "method": "GET",
+            "sortNum": 19375,
+            "created": "2023-06-01T03:06:40.116Z",
+            "modified": "2023-06-11T18:43:23.811Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "*/*",
+                    "isDisabled": true
+                },
+                {
+                    "name": "User-Agent",
+                    "value": "Thunder Client (https://www.thunderclient.com)",
+                    "isDisabled": true
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6IkZhbHNlIiwiZW1haWwiOiJzb3VoYWlsYS5wb3V6aWtvdkBnbWFpbC5jb20yIiwiZXhwIjoxNjg2NTA5NTY1LCJpYXQiOjE2ODY1MDg5NjUsInVzZXJJZCI6Mn0.A0SMIQfIUk2Z7KmVHNypv-lSqGvZWi3BadPgNukLhRI"
+            },
+            "tests": []
+        },
+        {
+            "_id": "cb6c3dd0-b77b-46b2-90f3-99dda31e1fd3",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Test Pulling of Products Based on Categories",
+            "url": "http://localhost:8000/products/test-categories/pullTest",
+            "method": "GET",
+            "sortNum": 19687.5,
+            "created": "2023-06-01T03:09:13.453Z",
+            "modified": "2023-06-01T03:17:56.729Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "1c3c1ff9-19db-4d0d-a12b-27137a1709e0",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Connect Prime to Sub",
+            "url": "http://localhost:8000/category/primetosub",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-06-01T02:00:47.224Z",
+            "modified": "2023-06-01T02:00:47.224Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"CategoryStart\":1,\n  \"CategoryEnd\":2\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "f4f8bd31-28c8-4260-8a41-1f42f174e19e",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Connect Sub to Final",
+            "url": "http://localhost:8000/category/finaltoprod",
+            "method": "POST",
+            "sortNum": 25000,
+            "created": "2023-06-01T02:24:52.429Z",
+            "modified": "2023-06-01T03:35:52.539Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"Category\":2,\n  \"Product\":5\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "3e0e1d1e-c018-4144-b56b-c9cf6f2ca68a",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Connect Final to Product",
+            "url": "http://localhost:8000/category/finaltoprod",
+            "method": "POST",
+            "sortNum": 27500,
+            "created": "2023-06-01T02:35:59.225Z",
+            "modified": "2023-06-01T03:40:27.318Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"Category\":2,\n  \"Product\":5\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "812cc966-8a86-42cc-8372-a08187cceb27",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Add Final Category",
+            "url": "http://localhost:8000/category/final",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-06-01T02:01:00.330Z",
+            "modified": "2023-06-01T03:32:29.355Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"CategoryName\":\"Category Final 2\",\n  \"CategoryDescription\":\"Final Category\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "6721e7fc-9cb4-427c-8550-9ed077e6d2d7",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Add Sub Category",
+            "url": "http://localhost:8000/category/sub",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2023-06-01T02:01:11.514Z",
+            "modified": "2023-06-01T03:31:00.254Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"CategoryName\":\"Category Sub 2\",\n  \"CategoryDescription\":\"this is a sub category\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "8ba1b3d6-2492-49ac-989c-dd58ec611b41",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Add Prime Category",
+            "url": "http://localhost:8000/category/prime",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2023-06-01T02:01:19.162Z",
+            "modified": "2023-06-01T03:30:21.096Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"CategoryName\":\"Category Prime 2\",\n  \"CategoryDescription\":\"Testing\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "cc7fc88c-8221-40ad-a355-681252fa470f",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Insert Test Categories",
+            "url": "http://localhost:8000/products/test-categories",
+            "method": "POST",
+            "sortNum": 60000,
+            "created": "2023-06-01T02:58:33.814Z",
+            "modified": "2023-06-01T02:58:33.814Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "948d5226-b70b-405c-86e5-10d89d5525a5",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Registration",
+            "url": "http://localhost:8000/users/",
+            "method": "POST",
+            "sortNum": 70000,
+            "created": "2023-06-01T03:03:54.947Z",
+            "modified": "2023-06-11T19:42:00.505Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"Email\":\"alexandrepouzikov@gmail.com2\",\n  \"Password\":\"1234\",\n  \"FirstName\":\"test\",\n  \"LastName\":\"tester\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "088b9555-c81c-40fd-adf4-ad7ca612da5a",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Login",
+            "url": "http://localhost:8000/users/login",
+            "method": "POST",
+            "sortNum": 80000,
+            "created": "2023-06-01T03:04:05.848Z",
+            "modified": "2023-06-12T00:59:54.924Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"Email\":\"souhaila.pouzikov@gmail.com2\",\n  \"PasswordHash\":\"12345\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "91516db0-b3ed-4f6a-b87b-5503fde74e6e",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Insert Test Categories",
+            "url": "http://localhost:8000/products/test-categories",
+            "method": "POST",
+            "sortNum": 90000,
+            "created": "2023-06-01T03:08:28.457Z",
+            "modified": "2023-06-01T03:08:28.457Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "10b69685-fed9-4246-b280-68ce53ac723b",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Create Product",
+            "url": "http://localhost:8000/products/",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2023-06-04T01:38:24.394Z",
+            "modified": "2023-06-17T04:16:31.333Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "*/*",
+                    "isDisabled": true
+                },
+                {
+                    "name": "User-Agent",
+                    "value": "Thunder Client (https://www.thunderclient.com)",
+                    "isDisabled": true
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"Product_Name\":\"created product ten\",\n  \"Product_Description\":\"this was created by request\",\n  \"Product_Price\":12.56,\n  \"Variation_Name\":\"blue - created product\",\n  \"Variation_Description\": \"created product - that is blue\",\n  \"Variation_Price\": 15.65,\n  \"Variation_Quantity\": 2,\n  \"Location_At\": \"Rabat\"\n  \n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "279e8d70-bbc9-4d85-861c-abab3657226e",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Add Product Variation",
+            "url": "http://localhost:8000/products/1/variation/",
+            "method": "POST",
+            "sortNum": 110000,
+            "created": "2023-06-04T04:25:42.580Z",
+            "modified": "2023-07-10T05:59:25.926Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "*/*",
+                    "isDisabled": true
+                },
+                {
+                    "name": "User-Agent",
+                    "value": "Thunder Client (https://www.thunderclient.com)",
+                    "isDisabled": true
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"Product_ID\":1,\n  \"Variation_Name\":\"red - created product\",\n  \"Variation_Description\": \"created product - that is blue\",\n  \"Variation_Price\": 99.65,\n  \"Variation_Quantity\": 2,\n  \"Location_At\": \"Rabat\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "b8c0753b-b853-4ebf-ab03-5829a4f8d9ea",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Add Inventory/Location",
+            "url": "http://localhost:8000/products/inventory",
+            "method": "POST",
+            "sortNum": 120000,
+            "created": "2023-06-08T04:17:54.119Z",
+            "modified": "2023-06-08T05:04:01.679Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"Variation_ID\":1,\n  \"Quantity\":50,\n  \"Location\":\"Rabat\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "a4fb5029-8c72-4cf7-8b30-ef4ca2d960d5",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Create Super User",
+            "url": "http://localhost:8000/superusercreation",
+            "method": "POST",
+            "sortNum": 130000,
+            "created": "2023-06-11T18:23:08.389Z",
+            "modified": "2023-06-11T18:23:08.389Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "1e9e6611-74e1-444e-b7a1-dadc8bf736b5",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Edit Product",
+            "url": "http://localhost:8000/products/1/",
+            "method": "PATCH",
+            "sortNum": 140000,
+            "created": "2023-06-15T03:51:45.343Z",
+            "modified": "2023-07-10T05:45:18.791Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"Product_Name\":\"Socks 23 and this\",\n  \"Product_Description\":\"For that\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "a6dde2f9-a0bb-48fa-aefd-0b057f78a106",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Edit Product Variation",
+            "url": "http://localhost:8000/products/1/variation/1/",
+            "method": "PATCH",
+            "sortNum": 150000,
+            "created": "2023-06-16T06:20:17.860Z",
+            "modified": "2023-07-10T06:22:07.873Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"Variation_ID\":2,\n  \"Variation_Name\":\"Socks idk and changed 2\",\n  \"Variation_Price\":10.51,\n  \"Variation_Description\":\"For this took like check see to process. I will\",\n  \"SKU\":\"testingSKU3\",\n  \"UPC\":\"testingUC\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "c208158f-5e66-4e55-80e5-242dc8eaccaa",
+            "colId": "6abd84ec-6bea-4dd2-8e54-a3a7efa91614",
+            "containerId": "",
+            "name": "Get All Tables",
+            "url": "http://localhost:8000/tables",
+            "method": "GET",
+            "sortNum": 160000,
+            "created": "2023-07-11T10:17:52.406Z",
+            "modified": "2023-07-11T10:17:52.406Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        }
+    ]
+}
