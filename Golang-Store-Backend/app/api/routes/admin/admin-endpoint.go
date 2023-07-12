@@ -2,6 +2,7 @@ package adminendpoints
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -28,6 +29,22 @@ type CategoryInsert struct{
 	CategoryDescription string `json:"CategoryDescription"`
 }
 
+func(route *AdminRoutes)  AdminTableScopeCheck(adminTable string, tableName string ,adminID any, w http.ResponseWriter) bool{
+	// strQ := "SELECT AdminID FROM" + adminTable + "WHERE Tablename = " + string(adminID) + " AND AdminID = " + adminID
+	var exists bool
+	var strBuild strings.Builder
+	strBuild.WriteString("SELECT AdminID FROM ")
+	strBuild.WriteString(adminTable)
+	strBuild.WriteString(" WHERE TableName = ? AND AdminID = ?")
+	route.DB.QueryRow(strBuild.String(), tableName, adminID).Scan(&exists)
+	
+	if exists == false{
+		fmt.Println("Failed Query AdminTableScopeCheck endpoint")
+		return false
+	}
+
+	return true
+}
 
 // Product automatically creates Variation
 type ProductCreate struct{
@@ -47,8 +64,14 @@ type ProductCreateRetrieve struct{
 
 }
 
-// Needs to get SKU, UPC, Primary Image to get created. PRimary Image needs to be a google/AWS bucket
+// Needs to get SKU, UPC, Primary Image to get created. Primary Image needs to be a google/AWS bucket
 func(route *AdminRoutes) CreateProduct(w http.ResponseWriter, r *http.Request){
+	userID := r.Context().Value("userid")
+	if !route.AdminTableScopeCheck("tblCreateTables","tblProducts",userID, w){
+		err := errors.New("Failed Query")
+		helpers.ErrorJSON(w, err, 400)
+		return
+	}
 	transaction, err := route.DB.Begin()
 	if err != nil{
 		log.Println("Error creating a transation in CreateProduct")
@@ -59,7 +82,7 @@ func(route *AdminRoutes) CreateProduct(w http.ResponseWriter, r *http.Request){
 
 	helpers.ReadJSON(w, r, &productRetrieve)
 
-	tRes, err := transaction.Exec("INSERT INTO tblProducts(Product_Name, Product_Description, Product_Price) VALUES(?,?,?)", productRetrieve.Name,productRetrieve.Description,productRetrieve.Price)
+	tRes, err := transaction.Exec("INSERT INTO tblProducts(Product_Name, Product_Description) VALUES(?,?)", productRetrieve.Name,productRetrieve.Description)
 	if err != nil{
 		fmt.Println("transaction at tblProduct has failed")
 		fmt.Println(err)
@@ -506,6 +529,7 @@ type VariationEdit struct{
 }
 
 func (route *AdminRoutes) EditVariation(w http.ResponseWriter, r *http.Request){
+	r.Header.Get("Authorization")
 	VarID := chi.URLParam(r, "VariationID")
 	VaritEdit := VariationEdit{}
 	helpers.ReadJSON(w,r, &VaritEdit)
