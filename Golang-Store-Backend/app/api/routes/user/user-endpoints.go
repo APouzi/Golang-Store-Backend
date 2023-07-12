@@ -127,9 +127,9 @@ func (route *UserRoutes) Login(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"exp":time.Now().Add(time.Minute * 10).Unix(),
+		"exp":time.Now().Add(time.Minute * 60).Unix(),
 		"iat":time.Now().Unix(),
-		"admin":"False",
+		"admin":"True",
 		"email":login.Email,
 		"userId":userID,
 	})
