@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Apouzi/golang-shop/app/api/helpers"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -23,8 +24,8 @@ func ValidateToken(next http.Handler) http.Handler{
 			return []byte("Testing key"), nil
 		})
 		if err != nil{
-			fmt.Println("middleware test error")
-			fmt.Println(err)
+			fmt.Println("ValidateToken Failed")
+			helpers.ErrorJSON(w,err)
 			return
 		}
 		claims := token.Claims.(jwt.MapClaims)
@@ -34,12 +35,6 @@ func ValidateToken(next http.Handler) http.Handler{
 }
 
 
-// Start of checking if given user is a SuperUser
-func HasSuperUserScope() http.Handler{
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-
-	})
-}
 
 
 
