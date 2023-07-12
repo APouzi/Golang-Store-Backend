@@ -44,7 +44,9 @@ func main(){
 	
 	if initializeDB == "t" || initializeDB == "T"{
 		PopulateProductTables(app.DB)
-		InitateAndPopulateUsers(app.DB)
+		InitiateAndPopulateUsers(app.DB)
+		InitAdminTables(app.DB)
+		
 	}
 	if initailizeView == "t" || initailizeView == "T"{
 		IntializeViews(app.DB)
@@ -239,7 +241,7 @@ type userProfile struct{
 	PhoneNumberHome string
 }
 
-func InitateAndPopulateUsers(db *sql.DB){
+func InitiateAndPopulateUsers(db *sql.DB){
 	query, err := ioutil.ReadFile("./sql/User.sql")
 
 	if err != nil{
@@ -272,6 +274,18 @@ func InitateAndPopulateUsers(db *sql.DB){
 	rowProfile.Scan(&userProf.PhoneNumberCell, &userProf.PhoneNumberHome)
 	fmt.Println("users:",user)
 	fmt.Println("userProfile:",userProf)
+}
+
+func InitAdminTables(db *sql.DB){
+	query, err := ioutil.ReadFile("./sql/Admin.sql")
+	if err != nil{
+		log.Fatal("Error when loading sql file",err)
+	}
+
+	_, err = db.Exec(string(query))
+	if err != nil{
+		log.Fatal("IntializeViews query execution failed", err)
+	}
 }
 
 func IntializeViews(db *sql.DB) {
