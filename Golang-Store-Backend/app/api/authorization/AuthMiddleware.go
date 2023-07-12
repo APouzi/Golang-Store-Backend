@@ -2,6 +2,7 @@ package authorization
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -35,6 +36,35 @@ func ValidateToken(next http.Handler) http.Handler{
 }
 
 
+// Start of checking if given user is a SuperUser
+func HasSuperUserScope(next http.Handler) http.Handler{
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+		jwttoken := r.Header.Get("Authorization")
+		if jwttoken == ""{
+			fmt.Println("No Authorization")
+			return
+		}
+		jwttoken = strings.Split(jwttoken, "Bearer ")[1]
+		token, err := jwt.Parse(jwttoken, func(token *jwt.Token) (interface{}, error) {
+			return []byte("Testing key"), nil
+		})
+		if err != nil{
+			fmt.Println("HasSuperUserScope failed")
+			fmt.Println(err)
+			helpers.ErrorJSON(w,err, 400)
+			return
+		}
+		claims := token.Claims.(jwt.MapClaims)
+		if claims["admin"] != "True"{
+			err := errors.New("Failed Admin Check")
+			helpers.ErrorJSON(w,err,400)
+			return
+		}
+		ctx := context.WithValue(r.Context(), "userid", claims["userId"])
+		next.ServeHTTP(w,r.WithContext(ctx))
+
+	})
+}
 
 
 
