@@ -47,7 +47,12 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 	digest.Post("/products/test-categories/InsertTest", rAdmin.InsertIntoFinalProd)
 
 	// Admin need to lockdown based on jwt payload and scope
-	digest.Post("/products/", rAdmin.CreateProduct)
+	digest.Group(func(digest chi.Router){
+		digest.Use(authorization.ValidateToken)
+		digest.Use(authorization.HasSuperUserScope)
+		digest.Post("/products/", rAdmin.CreateProduct)
+	})
+	
 	digest.Post("/products/{ProductID}/variation", rAdmin.CreateVariation)
 	digest.Post("/products/inventory", rAdmin.CreateInventoryLocation)
 	digest.Post("/category/prime", rAdmin.CreatePrimeCategory)
