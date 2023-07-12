@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS tblCreateTables(
+    CreateTablesID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    AdminID INT NOT NULL,
+    TableName VARCHAR(100) NOT NULL,
+    Foreign Key (AdminID) REFERENCES tblUser (UserID)
+);
+
+CREATE TABLE IF NOT EXISTS tblEditTables(
+    EditTablesID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    AdminID INT NOT NULL,
+    TableName VARCHAR(100) NOT NULL,
+    Foreign Key (AdminID) REFERENCES tblUser (UserID)
+);
+
+CREATE TABLE IF NOT EXISTS tblDeleteTables(
+    DeleteTablesID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    AdminID INT NOT NULL,
+    TableName VARCHAR(100) NOT NULL,
+    Foreign Key (AdminID) REFERENCES tblUser (UserID)
+);
+
+CREATE TABLE IF NOT EXISTS tblViewTables(
+    ViewTablesID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    AdminID INT NOT NULL,
+    TableName VARCHAR(100) NOT NULL,
+    Foreign Key (AdminID) REFERENCES tblUser (UserID)
+);
