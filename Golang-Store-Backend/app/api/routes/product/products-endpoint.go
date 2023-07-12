@@ -41,7 +41,7 @@ func (route *ProductRoutes) GetAllProductsEndPoint(w http.ResponseWriter, r *htt
 
 
 func (route *ProductRoutes) GetOneProductsEndPoint(w http.ResponseWriter, r *http.Request){
-	query, err :=  strconv.Atoi(chi.URLParam(r,"Product_ID"))
+	query, err :=  strconv.Atoi(chi.URLParam(r,"ProductID"))
 	if err != nil{
 		fmt.Println("String to Int failed:", err)
 	}
@@ -178,6 +178,10 @@ func (route *ProductRoutes) PullTestCategory(w http.ResponseWriter, r *http.Requ
 		fmt.Println(readinto.Product_ID, readinto.Product_Name)
 	}
 	fmt.Println("PullTestCAtegory result is:", readinto.Product_ID,readinto.Product_Name)
+}
+
+func (route *ProductRoutes) GetVariation(w http.ResponseWriter, r *http.Request){
+	
 }
 
 
