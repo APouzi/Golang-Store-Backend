@@ -23,9 +23,10 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 
 	rAdmin := adminendpoints.InstanceAdminRoutes(db)
 
+	AuthMiddleWare := authorization.InjectDBRef(db)
 	
 	digest.Group(func(digest chi.Router){
-		digest.Use(authorization.ValidateToken)
+		digest.Use(AuthMiddleWare.ValidateToken)
 		digest.Get("/users/profile",rUser.UserProfile)
 	})
 
@@ -48,8 +49,8 @@ func RouteDigest(digest *chi.Mux, db *sql.DB) *chi.Mux{
 
 	// Admin need to lockdown based on jwt payload and scope
 	digest.Group(func(digest chi.Router){
-		digest.Use(authorization.ValidateToken)
-		digest.Use(authorization.HasSuperUserScope)
+		digest.Use(AuthMiddleWare.ValidateToken)
+		digest.Use(AuthMiddleWare.HasAdminScope)
 		digest.Post("/products/", rAdmin.CreateProduct)
 	})
 	

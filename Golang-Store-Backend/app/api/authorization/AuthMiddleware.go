@@ -2,6 +2,7 @@ package authorization
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -16,7 +17,17 @@ type JWTtest struct{
 	Token string `json:"JWT"`
 }
 
-func ValidateToken(next http.Handler) http.Handler{
+type AuthMiddleWareStruct struct{
+	db *sql.DB
+}
+
+func InjectDBRef(db *sql.DB) *AuthMiddleWareStruct{
+	AMWS := AuthMiddleWareStruct{}
+	AMWS.db = db
+	return &AMWS
+}
+
+func(db *AuthMiddleWareStruct) ValidateToken(next http.Handler) http.Handler{
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
 		jwttoken := r.Header.Get("Authorization")
 		// When the jwttoken comes in, it will input "bearer" into the token and we have to remove this from the token so we can parse it. 
@@ -37,8 +48,41 @@ func ValidateToken(next http.Handler) http.Handler{
 
 
 // Start of checking if given user is a SuperUser
-func HasSuperUserScope(next http.Handler) http.Handler{
+func(db *AuthMiddleWareStruct) HasSuperUserScope(next http.Handler) http.Handler{
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+		jwttoken := r.Header.Get("Authorization")
+		if jwttoken == ""{
+			fmt.Println("No Authorization")
+			return
+		}
+		jwttoken = strings.Split(jwttoken, "Bearer ")[1]
+		token, err := jwt.Parse(jwttoken, func(token *jwt.Token) (interface{}, error) {
+			return []byte("Testing key"), nil
+		})
+		if err != nil{
+			fmt.Println("HasSuperUserScope failed")
+			fmt.Println(err)
+			helpers.ErrorJSON(w,err, 400)
+			return
+		}
+		claims := token.Claims.(jwt.MapClaims)
+		if claims["admin"] != "True"{
+			err := errors.New("failed admin check")
+			helpers.ErrorJSON(w,err,400)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "userid", claims["userId"])
+		next.ServeHTTP(w,r.WithContext(ctx))
+
+	})
+}
+
+
+
+
+func(db *AuthMiddleWareStruct) HasAdminScope(next http.Handler) http.Handler{
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		jwttoken := r.Header.Get("Authorization")
 		if jwttoken == ""{
 			fmt.Println("No Authorization")
@@ -62,25 +106,8 @@ func HasSuperUserScope(next http.Handler) http.Handler{
 		}
 		ctx := context.WithValue(r.Context(), "userid", claims["userId"])
 		next.ServeHTTP(w,r.WithContext(ctx))
-
 	})
 }
-
-
-
-
-func HasAdminScope(expectedScope string) bool {
-	fmt.Println("Validate hit -  scope")
-    // result := strings.Split(c.Scope, " ")
-    // for i := range result {
-    //     if result[i] == expectedScope {
-    //         return true
-    //     }
-    // }
-
-    return false
-}
-
 
 
 
