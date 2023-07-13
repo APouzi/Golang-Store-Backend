@@ -86,22 +86,29 @@ func(route *AdminRoutes) CreateProduct(w http.ResponseWriter, r *http.Request){
 	if err != nil{
 		fmt.Println("transaction at tblProduct has failed")
 		fmt.Println(err)
+		transaction.Rollback()
 	}
 	prodID, err := tRes.LastInsertId()
 	if err != nil {
 		fmt.Println("retrieval of LastInsertID of tblProduct has failed")
 		fmt.Println(err)
+		transaction.Rollback()
+		return
 	}
 	tRes, err = transaction.Exec("INSERT INTO tblProductVariation(Product_ID,Variation_Name, Variation_Description, Variation_Price) VALUES(?,?,?,?)",prodID, productRetrieve.VariationName, productRetrieve.VariationDescription, productRetrieve.VariationPrice)
 	if err != nil{
 		fmt.Println("transaction at tblProductVariation has failed")
 		fmt.Println(err)
+		transaction.Rollback()
+		return
 	}
 	
 	ProdVarID, err :=  tRes.LastInsertId()
 	if err != nil {
 		fmt.Println("retrieval of LastInsertID of tblProductVariation has failed")
 		fmt.Println(err)
+		transaction.Rollback()
+		return
 	}
 	PCR := ProductCreateRetrieve{
 		ProductID: prodID,
@@ -112,6 +119,8 @@ func(route *AdminRoutes) CreateProduct(w http.ResponseWriter, r *http.Request){
 		err = transaction.Commit()
 		if err != nil{
 			fmt.Println(err)
+			transaction.Rollback()
+			return
 		}
 		helpers.WriteJSON(w,http.StatusAccepted,&PCR)
 		return
