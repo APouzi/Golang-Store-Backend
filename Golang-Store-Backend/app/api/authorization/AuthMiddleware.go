@@ -67,12 +67,20 @@ func(db *AuthMiddleWareStruct) HasSuperUserScope(next http.Handler) http.Handler
 		}
 		claims := token.Claims.(jwt.MapClaims)
 		if claims["admin"] != "True"{
-			err := errors.New("failed admin check")
+			err := errors.New("failed superUser check")
 			helpers.ErrorJSON(w,err,400)
 			return
 		}
 
 		ctx := context.WithValue(r.Context(), "userid", claims["userId"])
+		var exists bool
+		db.db.QueryRow("SELECT UserID FROM tblAdminUsers WHERE UserID = ? AND SuperUser = 1", claims["userId"]).Scan(&exists)
+		if exists == false{
+			fmt.Println("User not in Admin, HasAdminScope has failed")
+			err := errors.New("failed admin check")
+			helpers.ErrorJSON(w,err, 400)
+			return
+		}
 		next.ServeHTTP(w,r.WithContext(ctx))
 
 	})
@@ -105,6 +113,14 @@ func(db *AuthMiddleWareStruct) HasAdminScope(next http.Handler) http.Handler{
 			return
 		}
 		ctx := context.WithValue(r.Context(), "userid", claims["userId"])
+		var exists bool
+		db.db.QueryRow("SELECT UserID FROM tblAdminUsers WHERE UserID = ?", claims["userId"]).Scan(&exists)
+		if exists == false{
+			fmt.Println("User not in Admin, HasAdminScope has failed")
+			err := errors.New("failed admin check")
+			helpers.ErrorJSON(w,err, 400)
+			return
+		}
 		next.ServeHTTP(w,r.WithContext(ctx))
 	})
 }
