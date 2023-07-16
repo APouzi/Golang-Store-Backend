@@ -15,6 +15,6 @@ RUN go build -o golang-shop .
 # RUN chmod +x app
 
 EXPOSE 8000
-CMD ["./golang-shop", "-initdb", "t", "-initView", "t"]
+# CMD ["./golang-shop", "-initdb", "t", "-initView", "t"]
 # CMD ["./golang-shop", "-initdb", "t", "-initView", "f"]
-# CMD ["./golang-shop"]
+CMD ["./golang-shop"]
