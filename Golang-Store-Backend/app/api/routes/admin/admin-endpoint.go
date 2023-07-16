@@ -614,3 +614,39 @@ func (route *AdminRoutes) GetAllTables(w http.ResponseWriter, r *http.Request){
 	}
 	helpers.WriteJSON(w,200,list)
 }
+
+
+func(route *AdminRoutes) UserToAdmin(w http.ResponseWriter, r *http.Request){
+	id := chi.URLParam(r,"UserID")
+	fmt.Println("UserToAdmin:",id)
+	var exists bool
+	route.DB.QueryRow("SELECT UserID FROM tblUser WHERE UserID = ?",id).Scan(&exists)
+	if exists == false {
+		helpers.ErrorJSON(w,errors.New("user doesn't exist") ,400)
+		return
+	}
+
+	var UserID int64
+	err := route.DB.QueryRow("SELECT UserID FROM tblUser WHERE UserID = ?", id).Scan(&UserID)
+	if err != nil{
+		helpers.ErrorJSON(w,errors.New("issue with scanning user into struct ") ,500)
+		return
+	}
+
+	sql, err := route.DB.Exec("INSERT INTO tblAdminUsers (UserID, SuperUser) VALUES(?,?)",UserID,false)
+	if err != nil{
+		helpers.ErrorJSON(w,errors.New("failed insertinginto tblAdminUsers") ,500)
+		return
+	}
+	type returnAdminID struct{
+		UserID int64 `json:"AdminUserID"`
+	}
+	adminID, err := sql.LastInsertId()
+	if err != nil{
+		helpers.ErrorJSON(w,errors.New("couldn't retrieve id from LastInsertId") ,500)
+		return
+	}
+	rAID := returnAdminID{UserID:adminID}
+	helpers.WriteJSON(w,200,rAID)
+
+}
