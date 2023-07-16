@@ -13,6 +13,7 @@ import (
 	"github.com/Apouzi/golang-shop/app/api/database"
 	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+	"github.com/redis/go-redis/v9"
 )
 
 const webport = 8000
@@ -20,6 +21,7 @@ const webport = 8000
 type Config struct{
 	DB *sql.DB
 	Models *database.Models
+	Redis *redis.Client
 }
 
 func main(){
@@ -37,9 +39,15 @@ func main(){
 	flag.StringVar(&initailizeView,"initView","","Intialize Views")
 	flag.Parse()
 	
+	rdb := redis.NewClient(&redis.Options{
+        Addr:     "redis:6379",
+        Password: "REDISPASS", // no password set
+        DB:       0,  // use default DB
+    })
 	app := Config{
 		DB: connection,
 		Models: models,
+		Redis: rdb,
 	}
 	
 	if initializeDB == "t" || initializeDB == "T"{
@@ -87,6 +95,7 @@ func init() {
 }
 
 func initDB() (*sql.DB,*database.Models){
+	// cfg := "user=user dbname=database sslmode=verify-full"
 	cfg := mysql.Config{
 		User:   "user",
 		Passwd: "example",
@@ -101,6 +110,7 @@ func initDB() (*sql.DB,*database.Models){
 
 	
 	for count < 11{
+		// db, err = sql.Open("postgres",  cfg)
 		db, err = sql.Open("mysql", cfg.FormatDSN(),)
 		count++
 		if err != nil{
