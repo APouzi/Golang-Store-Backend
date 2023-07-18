@@ -29,27 +29,30 @@ func RouteDigest(digest *chi.Mux, db *sql.DB, redis *redis.Client) *chi.Mux{
 
 	rTestRoutes := testroutes.InjectDBRef(db, redis)
 
-	digest.Group(func(digest chi.Router){
-		digest.Use(AuthMiddleWare.ValidateToken)
-		digest.Get("/users/profile",rUser.UserProfile)
-	})
-
-	//Index and Product
+	//Index
 	digest.Get("/", rIndex.Index)
-	digest.Post("/superusercreation",rUser.AdminSuperUserCreation)
-	
-	digest.Get("/products/{ProductID}",rProduct.GetOneProductsEndPoint)
-	digest.Get("/products/",rProduct.GetAllProductsEndPoint)
-	// digest.Get("/products/{CategoryName}",r.GetProductCategoryEndPointFinal)
-	digest.Post("/users/",rUser.Register)
-	digest.Post("/users/login",rUser.Login)
 
 	// Testing Routes
 	digest.Get("/products-test-redis",rTestRoutes.GetOneProductRedis)
 	digest.Get("/products-test-sql",rTestRoutes.GetOneProductSQL)
 	digest.Get("/products/test-categories/pullTest", rTestRoutes.PullTestCategory)
 	digest.Post("/products/test-categories", rTestRoutes.CreateTestCategory)
+
+
+	digest.Group(func(digest chi.Router){
+		digest.Use(AuthMiddleWare.ValidateToken)
+		digest.Get("/users/profile",rUser.UserProfile)
+	})
+	digest.Post("/users/",rUser.Register)
+	digest.Post("/users/login",rUser.Login)
+
 	
+	digest.Post("/superusercreation",rUser.AdminSuperUserCreation)
+	
+	digest.Get("/products/{ProductID}",rProduct.GetOneProductsEndPoint)
+	digest.Get("/products/",rProduct.GetAllProductsEndPoint)
+	// digest.Get("/products/{CategoryName}",r.GetProductCategoryEndPointFinal)
+
 	// digest.Get("/categories/",r.GetAllCategories)
 	
 	digest.Post("/products/test-categories/InsertTest", rAdmin.InsertIntoFinalProd)
@@ -60,7 +63,6 @@ func RouteDigest(digest *chi.Mux, db *sql.DB, redis *redis.Client) *chi.Mux{
 		digest.Use(AuthMiddleWare.HasAdminScope)
 		digest.Post("/products/", rAdmin.CreateProduct)
 	})
-	
 	digest.Post("/products/{ProductID}/variation", rAdmin.CreateVariation)
 	digest.Post("/products/inventory", rAdmin.CreateInventoryLocation)
 	digest.Post("/category/prime", rAdmin.CreatePrimeCategory)
