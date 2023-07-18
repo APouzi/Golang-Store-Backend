@@ -29,12 +29,34 @@ CREATE TABLE IF NOT EXISTS tblProductInventoryLocation (
   FOREIGN KEY (Variation_ID) REFERENCES tblProductVariation (Variation_ID) ON DELETE CASCADE
 );
 
--- CREATE TABLE IF NOT EXISTS tblLocation (
---   Location_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
---   Inv_ID INT NOT NULL,
-  
---   FOREIGN KEY (Inv_ID) REFERENCES tblProductInventory (Inv_ID) ON DELETE CASCADE
--- );
+CREATE TABLE IF NOT EXISTS tblProductVariationImages (
+  ImageID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  Product_ID INT NOT NULL,
+  ImageURL VARCHAR(255) NOT NULL,
+  FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS tblProductAttribute (
+  AttributeID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  Variation_ID INT NOT NULL,
+  AttributeName VARCHAR(255) NOT NULL,
+  FOREIGN KEY (Variation_ID) REFERENCES tblProductVariation (Variation_ID) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS tblDiscount (
+  Discount_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  DiscountCode VARCHAR(255) NOT NULL,
+  DiscountPercentage DECIMAL(5,2) NOT NULL,
+  DiscountStartDate DATE,
+  DiscountEndDate DATE
+);
+
+CREATE TABLE IF NOT EXISTS tblProductDiscount (
+  Product_ID INT NOT NULL,
+  Discount_ID INT NOT NULL,
+  PRIMARY KEY (Product_ID, Discount_ID),
+  FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE,
+  FOREIGN KEY (Discount_ID) REFERENCES tblDiscount (Discount_ID) ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS tblCategoriesPrime (
     Category_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -79,43 +101,11 @@ CREATE TABLE IF NOT EXISTS tblCatFinalProd (
 );
 
 
-CREATE TABLE IF NOT EXISTS tblDiscount (
-  Discount_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  DiscountCode VARCHAR(255) NOT NULL,
-  DiscountPercentage DECIMAL(5,2) NOT NULL,
-  DiscountStartDate DATE,
-  DiscountEndDate DATE
-);
-
-CREATE TABLE IF NOT EXISTS tblProductDiscount (
-  Product_ID INT NOT NULL,
-  Discount_ID INT NOT NULL,
-  PRIMARY KEY (Product_ID, Discount_ID),
-  FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE,
-  FOREIGN KEY (Discount_ID) REFERENCES tblDiscount (Discount_ID) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS tblImages (
-  ImageID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  Product_ID INT NOT NULL,
-  ImageURL VARCHAR(255) NOT NULL,
-  FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS tblVariation (
-  Variation_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  Product_ID INT NOT NULL,
-  VariationName VARCHAR(255) NOT NULL,
-  VariationDescription TEXT,
-  FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS tblAttribute (
-  AttributeID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  Variation_ID INT NOT NULL,
-  AttributeName VARCHAR(255) NOT NULL,
-  AttributeValue VARCHAR(255) NOT NULL,
-  FOREIGN KEY (Variation_ID) REFERENCES tblVariation (Variation_ID) ON DELETE CASCADE
-);
-
+-- CREATE TABLE IF NOT EXISTS tblVariation (
+--   Variation_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+--   Product_ID INT NOT NULL,
+--   VariationName VARCHAR(255) NOT NULL,
+--   VariationDescription TEXT,
+--   FOREIGN KEY (Product_ID) REFERENCES tblProducts (Product_ID) ON DELETE CASCADE
+-- );
 
