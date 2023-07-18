@@ -2,6 +2,7 @@ package userendpoints
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -52,18 +53,31 @@ func (route *UserRoutes) AdminSuperUserCreation(w http.ResponseWriter, r *http.R
 	sqlRes.Scan(&rowCount)
 	if rowCount != 0{
 		fmt.Println("Can't create super user, users already exist", rowCount)
+		helpers.ErrorJSON(w, errors.New("can't create super user, users already exist"), 400)
 		return
 	}
 	user := User{}
 	helpers.ReadJSON(w, r, &user)
-	id, err := route.UserQuery.RegisterAdminIntoDB(route.DB,user.Password,user.FirstName,user.LastName,user.Email)
+	Adminid, err := route.UserQuery.RegisterAdminIntoDB(route.DB,user.Password,user.FirstName,user.LastName,user.Email)
 	if err != nil{
 		fmt.Println(err)
 		helpers.ErrorJSON(w,err,http.StatusBadRequest)
 		return
 	}
-	userRet := AdminReturn{ID:id, FirstName: user.FirstName, LastName: user.LastName, Email: user.Email }
-	helpers.WriteJSON(w,http.StatusAccepted,userRet)
+	
+	sql, err := route.DB.Exec("INSERT INTO tblAdminUsers (UserID, SuperUser) VALUES(?,?)",Adminid,true)
+	if err != nil{
+		helpers.ErrorJSON(w,errors.New("failed insertinginto tblAdminUsers") ,500)
+		return
+	}
+
+	adminID, err := sql.LastInsertId()
+	if err != nil{
+		helpers.ErrorJSON(w,errors.New("couldn't retrieve id from LastInsertId") ,500)
+		return
+	}
+	userRet := AdminReturn{ID:adminID, FirstName: user.FirstName, LastName: user.LastName, Email: user.Email }
+	helpers.WriteJSON(w,200,userRet)
 
 }
 
