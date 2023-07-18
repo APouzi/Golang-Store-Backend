@@ -76,7 +76,10 @@ func RouteDigest(digest *chi.Mux, db *sql.DB, redis *redis.Client) *chi.Mux{
 	digest.Get("/category/subs", rAdmin.ReturnAllSubCategories)
 	digest.Get("/category/finals", rAdmin.ReturnAllFinalCategories)
 	digest.Patch("/products/{ProductID}",rAdmin.EditProduct)
-	digest.Patch("/products/{ProductID}/variation/{VariationID}",rAdmin.EditVariation)
+	digest.Patch("/variation/{VariationID}",rAdmin.EditVariation)
+	digest.Post("/variation/{VariationID}/attribute",rAdmin.AddAttribute)
+	digest.Patch("/variation/{VariationID}/attribute/{AttributeName}",rAdmin.UpdateAttribute)
+	digest.Delete("/variation/{VariationID}/attribute/{AttributeName}",rAdmin.DeleteAttribute)
 	digest.Post("/admin/{UserID}", rAdmin.UserToAdmin)
 
 	digest.Get("/tables",rAdmin.GetAllTables)
