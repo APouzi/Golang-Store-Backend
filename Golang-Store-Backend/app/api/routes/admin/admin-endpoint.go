@@ -715,6 +715,32 @@ func (route *AdminRoutes) DeleteAttribute(w http.ResponseWriter, r *http.Request
 }
 
 
+func (route *AdminRoutes) UpdateAttribute(w http.ResponseWriter, r *http.Request){
+	VarID := chi.URLParam(r,"VariationID")
+	AttName := chi.URLParam(r, "AttributeName")
+	if VarID == ""{
+		helpers.ErrorJSON(w, errors.New("please input VariationID"),400)
+		return
+	}
+	AttRead := Attribute{}
+	helpers.ReadJSON(w,r,&AttRead)
+	fmt.Println(AttRead.Attribute,"variatio id and atttribute name", VarID,AttName)
+	sql, err := route.DB.Exec("UPDATE tblProductAttribute SET AttributeName = ? WHERE Variation_ID = ? AND AttributeName = ?",AttRead.Attribute ,VarID, AttName)
+	if err != nil{
+		helpers.ErrorJSON(w,err, 400)
+		return
+	}
+
+	nRows, _ := sql.RowsAffected()
+	if nRows < 1{
+		helpers.WriteJSON(w, 200, "No Updated Happened")
+		return
+	}
+	
+	helpers.WriteJSON(w, 200, "Attribute Updated")
+}
+
+
 
 func (route *AdminRoutes) GetAllTables(w http.ResponseWriter, r *http.Request){
 	sql,err := route.DB.Query("show tables")
