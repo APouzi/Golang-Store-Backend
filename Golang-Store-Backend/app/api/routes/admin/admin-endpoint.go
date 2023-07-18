@@ -600,29 +600,26 @@ func (route *AdminRoutes) EditVariation(w http.ResponseWriter, r *http.Request){
 	helpers.WriteJSON(w, http.StatusAccepted, VaritEdit)
 }
 
-type SendBack struct{
-	IdSendBack int64 `json:"SendBackID"`
+type DeletedSendBack struct{
+	SendBack bool `json:"Deleted"`
 }
-
+type AddedSendBack struct{
+	IDSendBack int64 `json:"AddedID"`
+}
 func (route *AdminRoutes) DeletePrimeCategory(w http.ResponseWriter, r *http.Request){
 	CatName := chi.URLParam(r,"CatPrimeName")
 	if CatName == ""{
 		fmt.Println("No CatPrimeName wasn't pulled")
 		return
 	}
-	sql, err := route.DB.Exec("DELETE FROM tblCategoriesPrime WHERE CategoryName = ?", CatName)
+	_, err := route.DB.Exec("DELETE FROM tblCategoriesPrime WHERE CategoryName = ?", CatName)
 	if err != nil{
 		fmt.Println("Failed deletion in CatPrimeName")
 		helpers.ErrorJSON(w, errors.New("failed deletion in table"), 500)
 		return
 	}
-	id, err := sql.LastInsertId()
-	if err != nil{
-		fmt.Println("failed LastInsertId")
-		return
-	}
-	
-	sendBack := SendBack{IdSendBack:id}
+
+	sendBack := DeletedSendBack{SendBack:false}
 	helpers.WriteJSON(w,200,sendBack)
 }
 
@@ -633,19 +630,15 @@ func (route *AdminRoutes) DeleteSubCategory(w http.ResponseWriter, r *http.Reque
 		fmt.Println("No CatSubName wasn't pulled")
 		return
 	}
-	sql, err := route.DB.Exec("DELETE FROM tblCategoriesSub WHERE CategoryName = ?", CatName)
+	
+	_, err := route.DB.Exec("DELETE FROM tblCategoriesSub WHERE CategoryName = ?", CatName)
 	if err != nil{
 		fmt.Println("Failed deletion in CatSubName")
 		helpers.ErrorJSON(w, errors.New("failed deletion in table"), 500)
 		return
 	}
-	id, err := sql.LastInsertId()
-	if err != nil{
-		fmt.Println("failed LastInsertId")
-		return
-	}
 	
-	sendBack := SendBack{IdSendBack:id}
+	sendBack := DeletedSendBack{SendBack:false}
 	helpers.WriteJSON(w,200,sendBack)
 }
 
@@ -656,18 +649,15 @@ func (route *AdminRoutes) DeleteFinalCategory(w http.ResponseWriter, r *http.Req
 		fmt.Println("No CatPrimeName wasn't pulled")
 		return
 	}
-	sql, err := route.DB.Exec("DELETE FROM tblCategoriesFinal WHERE CategoryName = ?", CatName)
+	
+	_, err := route.DB.Exec("DELETE FROM tblCategoriesFinal WHERE CategoryName = ?", CatName)
 	if err != nil{
 		fmt.Println("Failed deletion in CatPrimeName")
 		helpers.ErrorJSON(w, errors.New("failed deletion in table"), 500)
 		return
 	}
-	id, err := sql.LastInsertId()
-	if err != nil{
-		fmt.Println("failed LastInsertId")
-		return
-	}
-	sendBack := SendBack{IdSendBack:id}
+
+	sendBack := DeletedSendBack{SendBack:false}
 	helpers.WriteJSON(w,200,sendBack)
 }
 type Attribute struct{
@@ -697,9 +687,10 @@ func (route *AdminRoutes) AddAttribute(w http.ResponseWriter, r *http.Request){
 		helpers.ErrorJSON(w,errors.New("failed attribute LastInsertID"))
 		return
 	}
-	sendBack := SendBack{IdSendBack: id}
+	sendBack := AddedSendBack{IDSendBack: id}
 	helpers.WriteJSON(w, 200, sendBack)
 }
+
 
 
 
