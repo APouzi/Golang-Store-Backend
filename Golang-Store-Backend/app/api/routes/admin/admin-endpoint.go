@@ -670,10 +670,36 @@ func (route *AdminRoutes) DeleteFinalCategory(w http.ResponseWriter, r *http.Req
 	sendBack := SendBack{IdSendBack:id}
 	helpers.WriteJSON(w,200,sendBack)
 }
-
-// func (route *AdminRoutes) AttributeToVariation(w http.ResponseWriter, r *http.Request){
-// 	sql, err := route.DB.Query()
-// }
+type Attribute struct{
+	Attribute string `json:"attribute"`
+}
+func (route *AdminRoutes) AddAttribute(w http.ResponseWriter, r *http.Request){
+	VarID := chi.URLParam(r,"VariationID")
+	if VarID == ""{
+		helpers.ErrorJSON(w, errors.New("please input VariationID"),400)
+		return
+	}
+	att := Attribute{}
+	
+	err := helpers.ReadJSON(w,r,&att)
+	if err != nil{
+		helpers.ErrorJSON(w, err, 500)
+		return
+	}
+	sql, err := route.DB.Exec("INSERT INTO tblProductAttribute (Variation_ID, AttributeName) VALUES(?,?)",VarID,att.Attribute)
+	if err != nil{
+		helpers.ErrorJSON(w,err, 400)
+		return
+	}
+	var id int64
+	id, err = sql.LastInsertId()
+	if err != nil{
+		helpers.ErrorJSON(w,errors.New("failed attribute LastInsertID"))
+		return
+	}
+	sendBack := SendBack{IdSendBack: id}
+	helpers.WriteJSON(w, 200, sendBack)
+}
 
 
 
