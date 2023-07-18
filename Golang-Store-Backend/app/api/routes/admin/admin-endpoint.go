@@ -601,7 +601,7 @@ func (route *AdminRoutes) EditVariation(w http.ResponseWriter, r *http.Request){
 }
 
 type SendBack struct{
-	idSendBack int64 `json:"SendBackID"`
+	IdSendBack int64 `json:"SendBackID"`
 }
 
 func (route *AdminRoutes) DeletePrimeCategory(w http.ResponseWriter, r *http.Request){
@@ -622,7 +622,7 @@ func (route *AdminRoutes) DeletePrimeCategory(w http.ResponseWriter, r *http.Req
 		return
 	}
 	
-	sendBack := SendBack{idSendBack:id}
+	sendBack := SendBack{IdSendBack:id}
 	helpers.WriteJSON(w,200,sendBack)
 }
 
@@ -645,7 +645,7 @@ func (route *AdminRoutes) DeleteSubCategory(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	
-	sendBack := SendBack{idSendBack:id}
+	sendBack := SendBack{IdSendBack:id}
 	helpers.WriteJSON(w,200,sendBack)
 }
 
@@ -667,7 +667,7 @@ func (route *AdminRoutes) DeleteFinalCategory(w http.ResponseWriter, r *http.Req
 		fmt.Println("failed LastInsertId")
 		return
 	}
-	sendBack := SendBack{idSendBack:id}
+	sendBack := SendBack{IdSendBack:id}
 	helpers.WriteJSON(w,200,sendBack)
 }
 
