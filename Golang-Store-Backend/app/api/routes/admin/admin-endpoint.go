@@ -600,6 +600,83 @@ func (route *AdminRoutes) EditVariation(w http.ResponseWriter, r *http.Request){
 	helpers.WriteJSON(w, http.StatusAccepted, VaritEdit)
 }
 
+type SendBack struct{
+	idSendBack int64 `json:"SendBackID"`
+}
+
+func (route *AdminRoutes) DeletePrimeCategory(w http.ResponseWriter, r *http.Request){
+	CatName := chi.URLParam(r,"CatPrimeName")
+	if CatName == ""{
+		fmt.Println("No CatPrimeName wasn't pulled")
+		return
+	}
+	sql, err := route.DB.Exec("DELETE FROM tblCategoriesPrime WHERE CategoryName = ?", CatName)
+	if err != nil{
+		fmt.Println("Failed deletion in CatPrimeName")
+		helpers.ErrorJSON(w, errors.New("failed deletion in table"), 500)
+		return
+	}
+	id, err := sql.LastInsertId()
+	if err != nil{
+		fmt.Println("failed LastInsertId")
+		return
+	}
+	
+	sendBack := SendBack{idSendBack:id}
+	helpers.WriteJSON(w,200,sendBack)
+}
+
+
+func (route *AdminRoutes) DeleteSubCategory(w http.ResponseWriter, r *http.Request){
+	CatName := chi.URLParam(r,"CatSubName")
+	if CatName == ""{
+		fmt.Println("No CatSubName wasn't pulled")
+		return
+	}
+	sql, err := route.DB.Exec("DELETE FROM tblCategoriesSub WHERE CategoryName = ?", CatName)
+	if err != nil{
+		fmt.Println("Failed deletion in CatSubName")
+		helpers.ErrorJSON(w, errors.New("failed deletion in table"), 500)
+		return
+	}
+	id, err := sql.LastInsertId()
+	if err != nil{
+		fmt.Println("failed LastInsertId")
+		return
+	}
+	
+	sendBack := SendBack{idSendBack:id}
+	helpers.WriteJSON(w,200,sendBack)
+}
+
+
+func (route *AdminRoutes) DeleteFinalCategory(w http.ResponseWriter, r *http.Request){
+	CatName := chi.URLParam(r,"CatFinalName")
+	if CatName == ""{
+		fmt.Println("No CatPrimeName wasn't pulled")
+		return
+	}
+	sql, err := route.DB.Exec("DELETE FROM tblCategoriesFinal WHERE CategoryName = ?", CatName)
+	if err != nil{
+		fmt.Println("Failed deletion in CatPrimeName")
+		helpers.ErrorJSON(w, errors.New("failed deletion in table"), 500)
+		return
+	}
+	id, err := sql.LastInsertId()
+	if err != nil{
+		fmt.Println("failed LastInsertId")
+		return
+	}
+	sendBack := SendBack{idSendBack:id}
+	helpers.WriteJSON(w,200,sendBack)
+}
+
+// func (route *AdminRoutes) AttributeToVariation(w http.ResponseWriter, r *http.Request){
+// 	sql, err := route.DB.Query()
+// }
+
+
+
 func (route *AdminRoutes) GetAllTables(w http.ResponseWriter, r *http.Request){
 	sql,err := route.DB.Query("show tables")
 	if err != nil{
@@ -648,5 +725,5 @@ func(route *AdminRoutes) UserToAdmin(w http.ResponseWriter, r *http.Request){
 	}
 	rAID := returnAdminID{UserID:adminID}
 	helpers.WriteJSON(w,200,rAID)
-
 }
+
