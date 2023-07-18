@@ -691,6 +691,28 @@ func (route *AdminRoutes) AddAttribute(w http.ResponseWriter, r *http.Request){
 	helpers.WriteJSON(w, 200, sendBack)
 }
 
+func (route *AdminRoutes) DeleteAttribute(w http.ResponseWriter, r *http.Request){
+	VarID := chi.URLParam(r,"VariationID")
+	AttName := chi.URLParam(r, "AttributeName")
+	if VarID == ""{
+		helpers.ErrorJSON(w, errors.New("please input VariationID"),400)
+		return
+	}
+
+	sql, err := route.DB.Exec("DELETE FROM tblProductAttribute WHERE Variation_ID = ? AND AttributeName = ?", VarID, AttName)
+	if err != nil{
+		helpers.ErrorJSON(w,err, 400)
+		return
+	}
+
+	nRows, _ := sql.RowsAffected()
+	if nRows < 1{
+		helpers.WriteJSON(w, 200, "Not Deleted")
+		return
+	}
+	
+	helpers.WriteJSON(w, 200, "Deleted")
+}
 
 
 
