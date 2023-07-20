@@ -101,14 +101,3 @@ func (route *ProductRoutes) GetProductCategoryEndPointFinal(w http.ResponseWrite
 	w.Write(JSONWrite)
 
 }
-
-
-
-
-func (route *ProductRoutes) GetVariation(w http.ResponseWriter, r *http.Request){
-	
-}
-
-
-
-
