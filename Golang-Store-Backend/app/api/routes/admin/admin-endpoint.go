@@ -168,45 +168,43 @@ func (route *AdminRoutes) CreateVariation(w http.ResponseWriter, r *http.Request
 	ProductID := chi.URLParam(r, "ProductID")
 	variation := VariationCreate{}
 	helpers.ReadJSON(w,r, &variation)
-// Check if product exists, if not, then return false
-	row := route.DB.QueryRow("SELECT Product_ID FROM tblProducts WHERE Product_ID = ?",ProductID)
-	if row.Err() != nil{
-		fmt.Println(row.Err().Error())
-		return
-	}
-	// DELETE
 
-	var exists bool
-	if row.Scan(&exists); exists == false {
-		
+// Check if product exists, if not, then return false
+	var prodID int64
+	err := route.DB.QueryRow("SELECT Product_ID FROM tblProducts WHERE Product_ID = ?",ProductID).Scan(&prodID)
+	if err == sql.ErrNoRows{
 		msg := ProdExist{}
 		msg.ProductExists = false
 		msg.Message = "Product provided does not exist"
 		helpers.WriteJSON(w,http.StatusAccepted,msg)
-		log.Println("Variation Creation completed")
+		log.Println("Variation Creation failed, Product doesn't exist")
 		return
 	}
 	// Implement the returns for this to allow for proper exiting 
 
 	var varit sql.Result
-	var err error
 	if variation.PrimaryImage != "" {
 		varitCrt := variCrtd{}
 		varit, err = route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price) VALUES(?,?,?,?)", ProductID,variation.Name, variation.Description, variation.Price)
 		if err != nil{
-			fmt.Println("insert into tblProductVariation failed")
-			fmt.Println(err)
+			log.Println("insert into tblProductVariation failed")
+			log.Println(err)
+			helpers.ErrorJSON(w, errors.New("insert into tblProductVariation failed"),400)
+			return
 		}
 		varitCrt.VariationID, err = varit.LastInsertId()
 		if err != nil{
-			fmt.Println(err)
+			log.Println(err)
+			helpers.ErrorJSON(w, errors.New("insert into tblProductVariation failed, could not retrieve varitation id"),400)
+			return
 		}
-		// helpers.WriteJSON(w, http.StatusCreated,varitCrt)
+		helpers.WriteJSON(w, http.StatusCreated,varitCrt)
 	}
 	varit, err = route.DB.Exec("INSERT INTO tblProductVariation(Product_ID, Variation_Name, Variation_Description, Variation_Price, PRIMARY_IMAGE) VALUES(?,?,?,?,?)", ProductID,variation.Name, variation.Description, variation.Price, variation.PrimaryImage)
 	if err != nil{
 		fmt.Println("insert into tblProductVariation failed")
 		fmt.Println(err)
+		helpers.ErrorJSON(w, errors.New("insert into tblProductVariation failed, could not retrieve varitation id"),400)
 	}
 //Check if location exists, if not, then we should prompt them to create one
 	varitID, err := varit.LastInsertId()
